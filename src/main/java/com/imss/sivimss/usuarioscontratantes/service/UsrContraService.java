@@ -11,4 +11,8 @@ public interface UsrContraService {
 
 	Response<?> buscarContratantes(DatosRequest request, Authentication authentication) throws IOException;
 
+	Response<?> detalleContratante(DatosRequest request, Authentication authentication) throws IOException;
+
+	Response<?> altaContratante(DatosRequest request, Authentication authentication) throws IOException;
+
 }

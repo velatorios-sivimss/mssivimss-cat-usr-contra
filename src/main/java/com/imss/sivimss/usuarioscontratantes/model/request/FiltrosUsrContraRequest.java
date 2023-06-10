@@ -17,7 +17,7 @@ import lombok.Setter;
 public class FiltrosUsrContraRequest {
 
 	private String curp;
-	private String rfc;
+	private String nss;
 	private String nomContratante;
 	private Boolean estatus;
 	private String tamanio;
