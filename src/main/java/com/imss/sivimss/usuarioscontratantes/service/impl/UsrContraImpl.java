@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.imss.sivimss.usuarioscontratantes.beans.UsrContra;
+import com.imss.sivimss.usuarioscontratantes.exception.BadRequestException;
 import com.imss.sivimss.usuarioscontratantes.model.request.FiltrosUsrContraRequest;
 import com.imss.sivimss.usuarioscontratantes.model.request.UsrContraRequest;
 import com.imss.sivimss.usuarioscontratantes.model.request.UsuarioDto;
@@ -45,6 +46,7 @@ public class UsrContraImpl implements UsrContraService {
 	 private static final String PATH_PAGINADO="/paginado";
 	 private static final String PATH_CONSULTA="/consulta";
 	 private static final String PATH_CREAR_MULTIPLE="/crearMultiple";
+	 private static final String PATH_ACTUALIZAR="/actualizar";
 	
 	@Autowired
 	private LogUtil logUtil;
@@ -95,23 +97,57 @@ public class UsrContraImpl implements UsrContraService {
 
 	@Override
 	public Response<?> altaContratante(DatosRequest request, Authentication authentication) throws IOException {
-		Response<?> response;
 		try {
 			String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		    UsrContraRequest contraRequest = gson.fromJson(datosJson, UsrContraRequest.class);	
 			UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
-			usrContra = new UsrContra(contraRequest);
+		    usrContra = new UsrContra(contraRequest);
 			usrContra.setIdUsuario(usuarioDto.getIdUsuario());
-				response = providerRestTemplate.consumirServicio(usrContra.insertarPersona().getDatos(), urlConsulta + PATH_CREAR_MULTIPLE,
+			Response<?>	 response = providerRestTemplate.consumirServicio(usrContra.insertarPersona().getDatos(), urlConsulta + PATH_CREAR_MULTIPLE,
 						authentication);
-				logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"Estatus OK", ALTA, authentication, usuario);
-				return response;		
+			logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"Estatus OK", ALTA, authentication, usuario);
+			return response;		
+			
 		}catch (Exception e) {
 			String consulta = usrContra.insertarPersona().getDatos().get(""+AppConstantes.QUERY+"").toString();
 			String encoded = new String(DatatypeConverter.parseBase64Binary(consulta));
 			log.error("Error al ejecutar la query " +encoded);
 			logUtil.crearArchivoLog(Level.WARNING.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"Error al ejecutar la query", CONSULTA, authentication, usuario);
-			throw new IOException("5", e.getCause()) ;
-		}
+			throw new IOException("5", e.getCause());
+		} 
+	}
+
+	@Override
+	public Response<?> modificarContratante(DatosRequest request, Authentication authentication) throws IOException {
+		Response<?> response;
+		try {
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		UsrContraRequest usrContraR = gson.fromJson(datosJson, UsrContraRequest.class);	
+		UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
+		usrContra = new UsrContra(usrContraR);
+		usrContra.setIdUsuario(usuarioDto.getIdUsuario());
+	
+		response = providerRestTemplate.consumirServicio(usrContra.editarPersona().getDatos(), urlConsulta + PATH_ACTUALIZAR,
+					authentication);
+			logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"PERSONA ACTUALIZADA CORRECTAMENTE", MODIFICACION, authentication, usuario);
+			if(response.getCodigo()==200) {
+				providerRestTemplate.consumirServicio(usrContra.editarDomic().getDatos(), urlConsulta + PATH_ACTUALIZAR,
+						authentication);
+			}else {
+				String consulta = usrContra.editarDomic().getDatos().get(""+AppConstantes.QUERY+"").toString();
+				String encoded = new String(DatatypeConverter.parseBase64Binary(consulta));
+				log.error("Error al ejecutar la query" +encoded);
+				logUtil.crearArchivoLog(Level.WARNING.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"Error", MODIFICACION, authentication, usuario);
+				throw new BadRequestException(HttpStatus.BAD_REQUEST, " 5 FALLO AL ACTUALIZAR EL DOMICILIO");		
+			} 
+			logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"DOMICILIO MODIFICADO CORRECTAMENTE", MODIFICACION, authentication, usuario);
+			return response;		
+	}catch (Exception e) {
+		String consulta = usrContra.editarPersona().getDatos().get("query").toString();
+		String encoded = new String(DatatypeConverter.parseBase64Binary(consulta));
+		log.error("Error al ejecutar la query" +encoded);
+		logUtil.crearArchivoLog(Level.WARNING.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"error", MODIFICACION, authentication, usuario);
+		throw new IOException("5", e.getCause()) ;
+	}
 	}
 }

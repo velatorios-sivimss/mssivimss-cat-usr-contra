@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.xml.bind.DatatypeConverter;
 
+import com.imss.sivimss.usuarioscontratantes.model.ContratanteModel;
+import com.imss.sivimss.usuarioscontratantes.model.DomicilioModel;
 import com.imss.sivimss.usuarioscontratantes.model.request.FiltrosUsrContraRequest;
 import com.imss.sivimss.usuarioscontratantes.model.request.UsrContraRequest;
 import com.imss.sivimss.usuarioscontratantes.util.AppConstantes;
@@ -29,6 +31,8 @@ import lombok.extern.slf4j.Slf4j;
 public class UsrContra {
 	
 	private Integer idContratante;
+	private Integer idPersona;
+	private Integer idDomicilio;
 	private String curp;
 	private String nss;
 	private String nombre;
@@ -50,7 +54,6 @@ public class UsrContra {
 	private String desMunicpio;
 	private String desEstado;
 	private Integer idUsuario;
-	private String fecOperacion;
 	private Boolean estatus;
 	
 	public UsrContra(UsrContraRequest contraR) {
@@ -65,17 +68,19 @@ public class UsrContra {
 		this.otroSexo = contraR.getOtroSexo();
 		this.fecNacimiento = contraR.getFecNacimiento();
 		this.idPais = contraR.getIdPais();
-		this.idlugarNac = contraR.getIdlugarNac();
+		this.idlugarNac = contraR.getIdLugarNac();
 		this.tel = contraR.getTel();
 		this.correo = contraR.getCorreo();
 		this.calle = contraR.getCalle();
-		this.numExte = contraR.getNumExte();
+		this.numExte = contraR.getNumExt();
 		this.numInt = contraR.getNumInt();
 		this.cp = contraR.getCp();
 		this.desColonia = contraR.getDesColonia();
-		this.desMunicpio = contraR.getDesMunicpio();
+		this.desMunicpio = contraR.getDesMunicipio();
 		this.desEstado = contraR.getDesEstado();
 		this.estatus = contraR.getEstatus();
+		this.idDomicilio = contraR.getIdDomicilio();
+		this.idPersona=contraR.getIdPersona();
 	}
 
 	
@@ -212,27 +217,127 @@ public class UsrContra {
 	public DatosRequest insertarPersona() {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
-		final QueryHelper q = new QueryHelper("INSERT INTO SVC_PERSONA ");
+		final QueryHelper q = new QueryHelper("INSERT INTO SVC_PERSONA");
 		q.agregarParametroValues(" NOM_PERSONA", "'" + this.nombre + "'");
 		q.agregarParametroValues("NOM_PRIMER_APELLIDO", "'" + this.paterno + "'");
 		q.agregarParametroValues("NOM_SEGUNDO_APELLIDO", "'" + this.materno + "'");
 		q.agregarParametroValues("FEC_NAC", "'" + this.fecNacimiento + "'");
 		q.agregarParametroValues("CVE_CURP", "'"+ this.curp + "'");
 		q.agregarParametroValues("CVE_RFC", "'" +this.rfc +"'");
+		q.agregarParametroValues("ID_PAIS", "'" + this.idPais + "'");
+		q.agregarParametroValues("ID_ESTADO", "'"+ this.idlugarNac+ "'");
 		q.agregarParametroValues("DES_CORREO", "'"+ this.correo +"'");
 		q.agregarParametroValues("DES_TELEFONO", "'" + this.tel + "'");
 		q.agregarParametroValues("ID_USUARIO_ALTA", ""+idUsuario+"");
 		q.agregarParametroValues("FEC_ALTA", ""+AppConstantes.CURRENT_TIMESTAMP+"");
-		String query = q.obtenerQueryInsertar() +"$$"  + insertarDomicilio(this.idContratanteConvenioPf, this.idParentesco, this.actaNac);
+		String query = q.obtenerQueryInsertar()+"$$"  + insertarDomic(); //+"$$"+ insertarContra();
 		log.info(query);
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes(StandardCharsets.UTF_8));
 		        parametro.put(AppConstantes.QUERY, encoded);
 		        parametro.put("separador","$$");
 		        parametro.put("replace","idTabla");
+		       // parametro.put("replace","idTabla2");
 		        request.setDatos(parametro);
-		
 		return request;
 	}
+
+
+	private String insertarContra() {
+		DatosRequest request = new DatosRequest();
+		Map<String, Object> parametro = new HashMap<>();
+		final QueryHelper q = new QueryHelper("INSERT INTO SVC_CONTRATANTE");
+		q.agregarParametroValues("ID_PERSONA", "idTabla");
+		q.agregarParametroValues("ID_DOMICILIO", "idTabla");
+		q.agregarParametroValues("IND_ACTIVO", "1");
+		q.agregarParametroValues("ID_USUARIO_ALTA", ""+idUsuario+"");
+		q.agregarParametroValues("FEC_ALTA", ""+AppConstantes.CURRENT_TIMESTAMP+"");
+		String query = q.obtenerQueryInsertar();
+	
+		String encoded = DatatypeConverter.printBase64Binary(query.getBytes(StandardCharsets.UTF_8));
+		        parametro.put(AppConstantes.QUERY, encoded);
+		        request.setDatos(parametro);
+		        return query;
+	}
+
+
+	private String insertarDomic() {
+		DatosRequest request = new DatosRequest();
+		Map<String, Object> parametro = new HashMap<>();
+		final QueryHelper q = new QueryHelper("INSERT INTO SVT_DOMICILIO");
+		q.agregarParametroValues("DES_CALLE", "'" + this.calle+ "'");
+		q.agregarParametroValues("NUM_EXTERIOR", "'" + this.numExte + "'");
+		q.agregarParametroValues("NUM_INTERIOR", "'" + this.numInt + "'");
+		q.agregarParametroValues("DES_CP", "" + this.cp + "");
+		q.agregarParametroValues("DES_COLONIA", "'"+this.desColonia + "'");
+		q.agregarParametroValues("DES_MUNICIPIO", "'"+this.desMunicpio+"'");
+		q.agregarParametroValues("DES_ESTADO", "'"+ this.desEstado +"'");
+		q.agregarParametroValues("ID_USUARIO_ALTA", ""+idUsuario+"");
+		q.agregarParametroValues("FEC_ALTA", ""+AppConstantes.CURRENT_TIMESTAMP+"");
+		String query = q.obtenerQueryInsertar(); //+"$$"+ insertarContra();
+		log.info(query);
+		String encoded = DatatypeConverter.printBase64Binary(query.getBytes(StandardCharsets.UTF_8));
+		        parametro.put(AppConstantes.QUERY, encoded);
+		    parametro.put("separador","$$");
+		        parametro.put("replace","idTabla");
+		        request.setDatos(parametro);
+		        return query;
+	}
+
+
+	public DatosRequest editarPersona() {
+		DatosRequest request = new DatosRequest();
+		Map<String, Object> parametro = new HashMap<>();
+		final QueryHelper q = new QueryHelper("UPDATE SVC_PERSONA");
+		q.agregarParametroValues("NOM_PERSONA", "'" + this.nombre + "'");
+		q.agregarParametroValues("NOM_PRIMER_APELLIDO", "'" + this.paterno + "'");
+		q.agregarParametroValues("NOM_SEGUNDO_APELLIDO", "'" + this.materno + "'");
+		q.agregarParametroValues("CVE_RFC", "'" +this.rfc +"'");
+		q.agregarParametroValues("NUM_SEXO", "" +this.numSexo +"");
+		
+			q.agregarParametroValues("DES_OTRO_SEXO", "'" +this.otroSexo +"'");	
+		
+		q.agregarParametroValues("FEC_NAC", "'" + this.fecNacimiento + "'");
+		q.agregarParametroValues("ID_PAIS", "" + this.idPais + "");
+		q.agregarParametroValues("ID_ESTADO", ""+ this.idlugarNac+ "");
+		q.agregarParametroValues("DES_TELEFONO", "'" + this.tel + "'");
+		q.agregarParametroValues("DES_CORREO", "'"+ this.correo +"'");
+		q.agregarParametroValues("ID_USUARIO_MODIFICA", ""+idUsuario+"");
+		q.agregarParametroValues("FEC_ACTUALIZACION", ""+AppConstantes.CURRENT_TIMESTAMP+"");
+		q.addWhere("ID_PERSONA= " +this.idPersona);
+		String query = q.obtenerQueryActualizar(); //"$$" + editarDomic();
+		log.info(query);
+		String encoded = DatatypeConverter.printBase64Binary(query.getBytes(StandardCharsets.UTF_8));
+		        parametro.put(AppConstantes.QUERY, encoded);
+		         parametro.put("separador","$$");
+		        request.setDatos(parametro);
+		return request;
+	}
+
+
+	public DatosRequest  editarDomic() {
+		DatosRequest request = new DatosRequest();
+		Map<String, Object> parametro = new HashMap<>();
+		final QueryHelper q = new QueryHelper("UPDATE SVT_DOMICILIO");
+		q.agregarParametroValues("DES_CALLE", "'" + this.calle+ "'");
+		q.agregarParametroValues("NUM_EXTERIOR", "'" + this.numExte + "'");
+		q.agregarParametroValues("NUM_INTERIOR", "'" + this.numInt + "'");
+		q.agregarParametroValues("DES_CP", "" +this.cp +"");
+		if(this.desColonia!=null || this.desMunicpio!=null) {
+			q.agregarParametroValues("DES_COLONIA", "'"+this.desColonia + "'");
+			q.agregarParametroValues("DES_MUNICIPIO", "'"+this.desMunicpio+"'");
+			q.agregarParametroValues("DES_ESTADO", "'"+ this.desEstado +"'");
+		}
+		q.agregarParametroValues("ID_USUARIO_MODIFICA", ""+idUsuario+"");
+		q.agregarParametroValues("FEC_ACTUALIZACION", ""+AppConstantes.CURRENT_TIMESTAMP+"");
+		q.addWhere("ID_DOMICILIO= " +this.idDomicilio);
+		String query =q.obtenerQueryActualizar();
+		log.info(query);
+		String encoded = DatatypeConverter.printBase64Binary(query.getBytes(StandardCharsets.UTF_8));
+		parametro.put(AppConstantes.QUERY, encoded);
+		request.setDatos(parametro);
+		return request;
+	}
+
 
 	
 }
