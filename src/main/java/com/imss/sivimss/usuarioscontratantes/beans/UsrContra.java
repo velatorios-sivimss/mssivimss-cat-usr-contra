@@ -160,14 +160,6 @@ public class UsrContra {
 	    request.setDatos(parametros);
 		return request;
 	}
-	
-	private static String obtieneQuery(SelectQueryUtil queryUtil) {
-        return queryUtil.build();
-    }
-	
-	private static String encodedQuery(String query) {
-        return DatatypeConverter.printBase64Binary(query.getBytes(StandardCharsets.UTF_8));
-    }
 
 	public DatosRequest verDetalle(DatosRequest request) {
 		Map<String, Object> parametros = new HashMap<>();
@@ -299,7 +291,7 @@ public class UsrContra {
 		if(this.otroSexo!=null) {
 			q.agregarParametroValues("DES_OTRO_SEXO", "'" +this.otroSexo +"'");		
 		}
-		q.agregarParametroValues("FEC_NAC", "'" + this.fecNacimiento + "'");
+		q.agregarParametroValues("FEC_NAC", "'"+fecNacimiento+"'");
 		q.agregarParametroValues("ID_PAIS", "" + this.idPais + "");
 		q.agregarParametroValues("ID_ESTADO", ""+ this.idlugarNac+ "");
 		q.agregarParametroValues("DES_TELEFONO", "'" + this.tel + "'");
@@ -364,5 +356,32 @@ public class UsrContra {
 	}
 
 
+	public DatosRequest  validacionActualizar(String nombre, String paterno, String materno, String rfc,
+			Integer idPersona) {
+		DatosRequest request= new DatosRequest();
+		Map<String, Object> parametro = new HashMap<>();
+		SelectQueryUtil queryUtil = new SelectQueryUtil();
+		queryUtil.select("*")
+		.from("SVC_PERSONA SP");
+		queryUtil.where("SP.NOM_PERSONA= :nombre").and("SP.NOM_PRIMER_APELLIDO= :paterno")
+		.and("SP.NOM_SEGUNDO_APELLIDO= :materno").and("SP.CVE_RFC= :rfc").and("SP.ID_PERSONA != :id")
+		.setParameter("nombre", nombre).setParameter("paterno", paterno).setParameter("materno", materno)
+		.setParameter("rfc", rfc).setParameter("id", idPersona);
+		String query = obtieneQuery(queryUtil);
+		log.info("-> " +query);
+		String encoded = encodedQuery(query);
+			parametro.put(AppConstantes.QUERY, encoded);
+				request.setDatos(parametro);
+				return request;
+	}
+
+	private static String obtieneQuery(SelectQueryUtil queryUtil) {
+        return queryUtil.build();
+    }
 	
+	private static String encodedQuery(String query) {
+        return DatatypeConverter.printBase64Binary(query.getBytes(StandardCharsets.UTF_8));
+    }
+
+
 }
