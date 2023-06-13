@@ -154,6 +154,10 @@ public class UsrContra {
 			.setParameter("curp", filtros.getCurp())
 			.setParameter("nss", filtros.getNss())
 			.setParameter("estatus", filtros.getEstatus());
+		}else if(filtros.getCurp()!=null && filtros.getNss()==null && filtros.getNomContratante()!=null && filtros.getEstatus()!=null) {
+			queryUtil.where("SP.CVE_CURP=:curp").and("SP.NOM_PERSONA LIKE '%"+filtros.getNomContratante()+"%'").and("SC.IND_ACTIVO=:estatus")
+			.setParameter("curp", filtros.getCurp())
+			.setParameter("estatus", filtros.getEstatus());
 		}
 		String query = obtieneQuery(queryUtil);
 		log.info("-> " +query);
@@ -391,10 +395,42 @@ public class UsrContra {
 
 	public Map<String, Object> reporteCatUsrContra(ReporteDto reporte) {
 		Map<String, Object> envioDatos = new HashMap<>();
-/*		if(reporte.getCurp()!=null && reporte.getNss()==null && reporte.getNomContratante() == null && reporte.getEstatus()==null ) {
-		envioDatos.put("condition", " AND SDC.FEC_ENTRADA LIKE '%"+fecha+"%' AND SV.ID_VELATORIO = "+reporteDto.getIdVelatorio()+"");		
-		} */
-		envioDatos.put("condition", ";");
+		if(reporte.getCurp()!=null && reporte.getNss()==null && reporte.getNomContratante()==null && reporte.getEstatus()==null) {
+			envioDatos.put("condition", " AND SP.CVE_CURP= '"+reporte.getCurp()+"'");		
+		}else if(reporte.getCurp()==null && reporte.getNss()!=null && reporte.getNomContratante()==null && reporte.getEstatus()==null) {
+			envioDatos.put("condition", " AND SP.CVE_NSS= '"+reporte.getNss()+"'");
+		}else if(reporte.getCurp()==null && reporte.getNss()==null && reporte.getNomContratante()!=null && reporte.getEstatus()==null) {
+			envioDatos.put("condition", " AND SP.NOM_PERSONA LIKE '%"+reporte.getNomContratante()+"%'");
+		}else if(reporte.getCurp()==null && reporte.getNss()==null && reporte.getNomContratante()==null && reporte.getEstatus()!=null) {
+			envioDatos.put("condition", " AND SC.IND_ACTIVO= "+reporte.getEstatus()+"");
+		}else if(reporte.getCurp()!=null && reporte.getNss()!=null && reporte.getNomContratante()==null && reporte.getEstatus()==null) {
+			envioDatos.put("condition", " AND SP.CVE_CURP= '"+reporte.getCurp()+"' AND SP.CVE_NSS= '"+reporte.getNss()+"'");		
+		}else if(reporte.getCurp()!=null && reporte.getNss()==null && reporte.getNomContratante()!=null && reporte.getEstatus()==null) {
+			envioDatos.put("condition", " AND SP.CVE_CURP= '"+reporte.getCurp()+"' AND SP.NOM_PERSONA LIKE '%"+reporte.getNomContratante()+"%'");
+		}else if(reporte.getCurp()!=null && reporte.getNss()==null && reporte.getNomContratante()==null && reporte.getEstatus()!=null) {
+			envioDatos.put("condition", " AND SP.CVE_CURP= '"+reporte.getCurp()+"' AND SC.IND_ACTIVO= "+reporte.getEstatus()+"");
+		}else if(reporte.getCurp()!=null && reporte.getNss()!=null && reporte.getNomContratante()!=null && reporte.getEstatus()==null) {
+			envioDatos.put("condition", " AND SP.CVE_CURP= '"+reporte.getCurp()+"' AND SP.CVE_NSS= '"+reporte.getNss()+" AND SP.NOM_PERSONA LIKE '%"+reporte.getNomContratante()+"%'");
+		}else if(reporte.getCurp()!=null && reporte.getNss()!=null && reporte.getNomContratante()==null && reporte.getEstatus()!=null) {
+			envioDatos.put("condition", " AND SP.CVE_CURP= '"+reporte.getCurp()+"' AND SP.CVE_NSS= '"+reporte.getNss()+" AND SC.IND_ACTIVO= "+reporte.getEstatus()+"");
+		}else if(reporte.getCurp()==null && reporte.getNss()!=null && reporte.getNomContratante()!=null && reporte.getEstatus()!=null) {
+			envioDatos.put("condition", " AND SP.CVE_NSS= '"+reporte.getNss()+"' AND SP.NOM_PERSONA LIKE '%"+reporte.getNomContratante()+"%' AND SC.IND_ACTIVO= "+reporte.getEstatus()+"");
+		}else if(reporte.getCurp()==null && reporte.getNss()!=null && reporte.getNomContratante()==null && reporte.getEstatus()!=null) {
+			envioDatos.put("condition", " AND SP.CVE_NSS= '"+reporte.getNss()+" AND SC.IND_ACTIVO= "+reporte.getEstatus()+"");
+		}else if(reporte.getCurp()==null && reporte.getNss()!=null && reporte.getNomContratante()!=null && reporte.getEstatus()==null) {
+			envioDatos.put("condition", " AND SP.CVE_NSS= '"+reporte.getNss()+" AND SP.NOM_PERSONA LIKE '%"+reporte.getNomContratante()+"%'");
+		}else if(reporte.getCurp()==null && reporte.getNss()==null && reporte.getNomContratante()!=null && reporte.getEstatus()!=null) {
+			
+			envioDatos.put("condition", " AND SP.NOM_PERSONA LIKE '%"+reporte.getNomContratante()+"%' AND SC.IND_ACTIVO= "+reporte.getEstatus()+"");
+		}else if(reporte.getCurp()!=null && reporte.getNss()!=null && reporte.getNomContratante()!=null && reporte.getEstatus()!=null) {
+			envioDatos.put("condition", " AND SP.CVE_CURP= '"+reporte.getCurp()+"' AND SP.CVE_NSS= '"+reporte.getNss()+"' AND SP.NOM_PERSONA LIKE '%"+reporte.getNomContratante()+"%' AND SC.IND_ACTIVO= "+reporte.getEstatus()+"");
+		}else if(reporte.getCurp()!=null && reporte.getNss()==null && reporte.getNomContratante()!=null && reporte.getEstatus()!=null) {
+			envioDatos.put("condition", " AND SP.CVE_CURP= '"+reporte.getCurp()+"' AND SP.NOM_PERSONA LIKE '%"+reporte.getNomContratante()+"%' AND SC.IND_ACTIVO= "+reporte.getEstatus()+"");
+		}
+		else if(reporte.getCurp()==null && reporte.getNss()==null && reporte.getNomContratante()==null && reporte.getEstatus()==null) {
+			envioDatos.put("condition", ";");
+		}
+		log.info("--->  "+envioDatos.toString());
 		envioDatos.put("rutaNombreReporte", reporte.getRutaNombreReporte());
 		envioDatos.put("tipoReporte", reporte.getTipoReporte());
 		if(reporte.getTipoReporte().equals("xls")) {
