@@ -103,6 +103,17 @@ public class UsrContraController {
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
 
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
+	@PostMapping("/descargar/catalogo-contratantes")
+	public CompletableFuture<?> descargarCatalogoUstContratantes(@RequestBody DatosRequest request,Authentication authentication) throws IOException{
+		logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"Imprimir catalogo de usuarios contratantes", IMPRIMIR, authentication, usuario);
+		Response<?> response = usrContra.descargarCatContratantes(request,authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+	}
+	
 	/**
 	 * fallbacks generico
 	 * 

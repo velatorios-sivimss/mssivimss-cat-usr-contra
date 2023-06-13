@@ -1,7 +1,11 @@
 package com.imss.sivimss.usuarioscontratantes.beans;
 
 import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.xml.bind.DatatypeConverter;
@@ -10,6 +14,7 @@ import com.imss.sivimss.usuarioscontratantes.exception.BadRequestException;
 import com.imss.sivimss.usuarioscontratantes.model.ContratanteModel;
 import com.imss.sivimss.usuarioscontratantes.model.DomicilioModel;
 import com.imss.sivimss.usuarioscontratantes.model.request.FiltrosUsrContraRequest;
+import com.imss.sivimss.usuarioscontratantes.model.request.ReporteDto;
 import com.imss.sivimss.usuarioscontratantes.model.request.UsrContraRequest;
 import com.imss.sivimss.usuarioscontratantes.util.AppConstantes;
 import com.imss.sivimss.usuarioscontratantes.util.DatosRequest;
@@ -382,6 +387,21 @@ public class UsrContra {
 	private static String encodedQuery(String query) {
         return DatatypeConverter.printBase64Binary(query.getBytes(StandardCharsets.UTF_8));
     }
+
+
+	public Map<String, Object> reporteCatUsrContra(ReporteDto reporte) {
+		Map<String, Object> envioDatos = new HashMap<>();
+/*		if(reporte.getCurp()!=null && reporte.getNss()==null && reporte.getNomContratante() == null && reporte.getEstatus()==null ) {
+		envioDatos.put("condition", " AND SDC.FEC_ENTRADA LIKE '%"+fecha+"%' AND SV.ID_VELATORIO = "+reporteDto.getIdVelatorio()+"");		
+		} */
+		envioDatos.put("condition", ";");
+		envioDatos.put("rutaNombreReporte", reporte.getRutaNombreReporte());
+		envioDatos.put("tipoReporte", reporte.getTipoReporte());
+		if(reporte.getTipoReporte().equals("xls")) {
+			envioDatos.put("IS_IGNORE_PAGINATION", true);
+		}
+		return envioDatos;
+	}
 
 
 }

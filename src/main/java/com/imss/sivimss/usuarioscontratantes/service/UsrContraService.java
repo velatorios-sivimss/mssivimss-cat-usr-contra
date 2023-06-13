@@ -19,4 +19,6 @@ public interface UsrContraService {
 
 	Response<?> cambiarEstatusContratante(DatosRequest request, Authentication authentication) throws IOException;
 
+	Response<?> descargarCatContratantes(DatosRequest request, Authentication authentication)throws IOException;
+
 }

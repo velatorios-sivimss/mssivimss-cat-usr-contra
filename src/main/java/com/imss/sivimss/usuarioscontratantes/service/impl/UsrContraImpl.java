@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.logging.Level;
 
 import javax.xml.bind.DatatypeConverter;
@@ -22,6 +23,7 @@ import com.google.gson.Gson;
 import com.imss.sivimss.usuarioscontratantes.beans.UsrContra;
 import com.imss.sivimss.usuarioscontratantes.exception.BadRequestException;
 import com.imss.sivimss.usuarioscontratantes.model.request.FiltrosUsrContraRequest;
+import com.imss.sivimss.usuarioscontratantes.model.request.ReporteDto;
 import com.imss.sivimss.usuarioscontratantes.model.request.UsrContraRequest;
 import com.imss.sivimss.usuarioscontratantes.model.request.UsuarioDto;
 import com.imss.sivimss.usuarioscontratantes.model.response.UsrContraResponse;
@@ -181,6 +183,16 @@ public class UsrContraImpl implements UsrContraService {
 	return rst.toString().equals("[]");
 		}
 		 throw new BadRequestException(HttpStatus.BAD_REQUEST, "ERROR AL REGISTRAR EL CONTRATANTE");
+	}
+
+	@Override
+	public Response<?> descargarCatContratantes(DatosRequest request, Authentication authentication)
+			throws IOException {
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		ReporteDto reporte= gson.fromJson(datosJson, ReporteDto.class);
+		Map<String, Object> envioDatos = new UsrContra().reporteCatUsrContra(reporte);
+		return providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes ,
+				authentication);
 	}
 	}
 
