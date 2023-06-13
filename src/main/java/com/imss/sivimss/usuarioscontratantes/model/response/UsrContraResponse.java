@@ -21,7 +21,7 @@ import lombok.ToString;
 @JsonIgnoreType(value = true)
 public class UsrContraResponse {
 	
-	@JsonProperty(value = "idcontratante")
+	@JsonProperty(value = "idContratante")
 	private Integer ID_CONTRATANTE;
 
 	@JsonProperty(value = "curp")

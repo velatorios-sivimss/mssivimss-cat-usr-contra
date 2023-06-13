@@ -120,26 +120,23 @@ public class UsrContraImpl implements UsrContraService {
 	@Override
 	public Response<?> modificarContratante(DatosRequest request, Authentication authentication) throws IOException {
 		Response<?> response;
-		try {
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		UsrContraRequest usrContraR = gson.fromJson(datosJson, UsrContraRequest.class);	
+		if(usrContraR.getIdPersona()==null || usrContraR.getIdDomicilio()==null){
+			logUtil.crearArchivoLog(Level.WARNING.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"Informacion Incompleta", MODIFICACION, authentication, usuario);
+			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion incompleta ");
+		}
+		try {
 		UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
 		usrContra = new UsrContra(usrContraR);
 		usrContra.setIdUsuario(usuarioDto.getIdUsuario());
-	
 		response = providerRestTemplate.consumirServicio(usrContra.editarPersona().getDatos(), urlConsulta + PATH_ACTUALIZAR,
 					authentication);
 			logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"PERSONA ACTUALIZADA CORRECTAMENTE", MODIFICACION, authentication, usuario);
 			if(response.getCodigo()==200) {
 				providerRestTemplate.consumirServicio(usrContra.editarDomic().getDatos(), urlConsulta + PATH_ACTUALIZAR,
 						authentication);
-			}else {
-				String consulta = usrContra.editarDomic().getDatos().get(""+AppConstantes.QUERY+"").toString();
-				String encoded = new String(DatatypeConverter.parseBase64Binary(consulta));
-				log.error("Error al ejecutar la query" +encoded);
-				logUtil.crearArchivoLog(Level.WARNING.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"Error", MODIFICACION, authentication, usuario);
-				throw new BadRequestException(HttpStatus.BAD_REQUEST, " 5 FALLO AL ACTUALIZAR EL DOMICILIO");		
-			} 
+			}
 			logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"DOMICILIO MODIFICADO CORRECTAMENTE", MODIFICACION, authentication, usuario);
 			return response;		
 	}catch (Exception e) {
@@ -150,4 +147,17 @@ public class UsrContraImpl implements UsrContraService {
 		throw new IOException("5", e.getCause()) ;
 	}
 	}
-}
+
+	@Override
+	public Response<?> cambiarEstatusContratante(DatosRequest request, Authentication authentication) throws IOException {
+		UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
+		usrContra.setIdUsuario(usuarioDto.getIdUsuario());
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		UsrContraRequest usrContraR = gson.fromJson(datosJson, UsrContraRequest.class);	
+	  Response<?> response = providerRestTemplate.consumirServicio(usrContra.cambiarEstatus(usrContraR.getEstatus(), usrContraR.getIdContratante()).getDatos(), urlConsulta +PATH_ACTUALIZAR,
+				authentication);
+		logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"Todo correcto", BAJA, authentication, usuario);
+	return response;
+	}
+
+	}

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.xml.bind.DatatypeConverter;
 
+import com.imss.sivimss.usuarioscontratantes.exception.BadRequestException;
 import com.imss.sivimss.usuarioscontratantes.model.ContratanteModel;
 import com.imss.sivimss.usuarioscontratantes.model.DomicilioModel;
 import com.imss.sivimss.usuarioscontratantes.model.request.FiltrosUsrContraRequest;
@@ -87,9 +88,11 @@ public class UsrContra {
 	public DatosRequest buscarContratantes(DatosRequest request, FiltrosUsrContraRequest filtros) {
 		Map<String, Object> parametros = new HashMap<>();
 		SelectQueryUtil queryUtil = new SelectQueryUtil();
-		queryUtil.select("SC.ID_CONTRATANTE",
+		queryUtil.select("SC.ID_CONTRATANTE AS idContratante",
+				"SC.ID_DOMICILIO AS idDomicilio",
+				"SC.ID_PERSONA AS idPersona",
 				"SP.CVE_CURP AS curp",
-				"SP.CVE_NSS AS NSS",
+				"SP.CVE_NSS AS nss",
 				"CONCAT(SP.NOM_PERSONA, ' ',"
 				+ "SP.NOM_PRIMER_APELLIDO, ' ',"
 				+ "SP.NOM_SEGUNDO_APELLIDO) AS NomContratante",
@@ -293,9 +296,9 @@ public class UsrContra {
 		q.agregarParametroValues("NOM_SEGUNDO_APELLIDO", "'" + this.materno + "'");
 		q.agregarParametroValues("CVE_RFC", "'" +this.rfc +"'");
 		q.agregarParametroValues("NUM_SEXO", "" +this.numSexo +"");
-		
-			q.agregarParametroValues("DES_OTRO_SEXO", "'" +this.otroSexo +"'");	
-		
+		if(this.otroSexo!=null) {
+			q.agregarParametroValues("DES_OTRO_SEXO", "'" +this.otroSexo +"'");		
+		}
 		q.agregarParametroValues("FEC_NAC", "'" + this.fecNacimiento + "'");
 		q.agregarParametroValues("ID_PAIS", "" + this.idPais + "");
 		q.agregarParametroValues("ID_ESTADO", ""+ this.idlugarNac+ "");
@@ -336,6 +339,28 @@ public class UsrContra {
 		parametro.put(AppConstantes.QUERY, encoded);
 		request.setDatos(parametro);
 		return request;
+	}
+
+
+	public DatosRequest cambiarEstatus(Boolean estatus, Integer idContratante) {
+		DatosRequest request = new DatosRequest();
+        Map<String, Object> parametro = new HashMap<>();
+        final QueryHelper q = new QueryHelper("UPDATE SVC_CONTRATANTE");
+        q.agregarParametroValues("IND_ACTIVO", ""+estatus+"");
+        if(!estatus) {
+        	 q.agregarParametroValues("ID_USUARIO_BAJA", ""+idUsuario+"" );
+ 			q.agregarParametroValues("FEC_BAJA", ""+AppConstantes.CURRENT_TIMESTAMP+"");
+        }else {
+        	  q.agregarParametroValues("ID_USUARIO_MODIFICA", ""+idUsuario+"" );
+  			q.agregarParametroValues("FEC_ACTUALIZACION", ""+AppConstantes.CURRENT_TIMESTAMP+"");
+        }
+		q.addWhere("ID_CONTRATANTE =" + idContratante);
+        String query = q.obtenerQueryActualizar();
+        log.info(query);
+        String encoded = encodedQuery(query);
+        parametro.put(AppConstantes.QUERY, encoded);
+        request.setDatos(parametro);
+        return request;
 	}
 
 

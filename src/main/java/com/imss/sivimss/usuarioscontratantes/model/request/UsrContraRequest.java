@@ -39,8 +39,6 @@ public class UsrContraRequest {
 	private String desEstado;
 	private String desMunicipio;
 	private String desColonia;
-
-
 	private Integer idPersona;
 	private Integer idDomicilio;
 	private Boolean estatus;

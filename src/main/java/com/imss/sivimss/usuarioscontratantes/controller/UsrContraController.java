@@ -91,6 +91,17 @@ public class UsrContraController {
 		return CompletableFuture
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
+	
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
+	@PostMapping("cambiar-estatus")
+	public CompletableFuture<?> cambiarEstatusUsuarioContratante(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+		logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"actualizar beneficiarios", MODIFICACION, authentication, usuario);
+		Response<?> response = usrContra.cambiarEstatusContratante(request,authentication); 
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+	}
 
 	/**
 	 * fallbacks generico
