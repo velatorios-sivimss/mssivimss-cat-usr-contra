@@ -342,7 +342,7 @@ public class UsrContra {
         Map<String, Object> parametro = new HashMap<>();
         final QueryHelper q = new QueryHelper("UPDATE SVC_CONTRATANTE");
         q.agregarParametroValues("IND_ACTIVO", ""+estatus+"");
-        if(!estatus) {
+        if(Boolean.FALSE.equals(estatus)) {
         	 q.agregarParametroValues("ID_USUARIO_BAJA", ""+idUsuario+"" );
  			q.agregarParametroValues("FEC_BAJA", ""+AppConstantes.CURRENT_TIMESTAMP+"");
         }else {
@@ -388,41 +388,20 @@ public class UsrContra {
 
 	public Map<String, Object> reporteCatUsrContra(ReporteDto reporte) {
 		Map<String, Object> envioDatos = new HashMap<>();
-		if(reporte.getCurp()!=null && reporte.getNss()==null && reporte.getNomContratante()==null && reporte.getEstatus()==null) {
-			envioDatos.put("condition", " AND SP.CVE_CURP= '"+reporte.getCurp()+"'");		
-		}else if(reporte.getCurp()==null && reporte.getNss()!=null && reporte.getNomContratante()==null && reporte.getEstatus()==null) {
-			envioDatos.put("condition", " AND SP.CVE_NSS= '"+reporte.getNss()+"'");
-		}else if(reporte.getCurp()==null && reporte.getNss()==null && reporte.getNomContratante()!=null && reporte.getEstatus()==null) {
-			envioDatos.put("condition", " AND SP.NOM_PERSONA LIKE '%"+reporte.getNomContratante()+"%'");
-		}else if(reporte.getCurp()==null && reporte.getNss()==null && reporte.getNomContratante()==null && reporte.getEstatus()!=null) {
-			envioDatos.put("condition", " AND SC.IND_ACTIVO= "+reporte.getEstatus()+"");
-		}else if(reporte.getCurp()!=null && reporte.getNss()!=null && reporte.getNomContratante()==null && reporte.getEstatus()==null) {
-			envioDatos.put("condition", " AND SP.CVE_CURP= '"+reporte.getCurp()+"' AND SP.CVE_NSS= '"+reporte.getNss()+"'");		
-		}else if(reporte.getCurp()!=null && reporte.getNss()==null && reporte.getNomContratante()!=null && reporte.getEstatus()==null) {
-			envioDatos.put("condition", " AND SP.CVE_CURP= '"+reporte.getCurp()+"' AND SP.NOM_PERSONA LIKE '%"+reporte.getNomContratante()+"%'");
-		}else if(reporte.getCurp()!=null && reporte.getNss()==null && reporte.getNomContratante()==null && reporte.getEstatus()!=null) {
-			envioDatos.put("condition", " AND SP.CVE_CURP= '"+reporte.getCurp()+"' AND SC.IND_ACTIVO= "+reporte.getEstatus()+"");
-		}else if(reporte.getCurp()!=null && reporte.getNss()!=null && reporte.getNomContratante()!=null && reporte.getEstatus()==null) {
-			envioDatos.put("condition", " AND SP.CVE_CURP= '"+reporte.getCurp()+"' AND SP.CVE_NSS= '"+reporte.getNss()+" AND SP.NOM_PERSONA LIKE '%"+reporte.getNomContratante()+"%'");
-		}else if(reporte.getCurp()!=null && reporte.getNss()!=null && reporte.getNomContratante()==null && reporte.getEstatus()!=null) {
-			envioDatos.put("condition", " AND SP.CVE_CURP= '"+reporte.getCurp()+"' AND SP.CVE_NSS= '"+reporte.getNss()+" AND SC.IND_ACTIVO= "+reporte.getEstatus()+"");
-		}else if(reporte.getCurp()==null && reporte.getNss()!=null && reporte.getNomContratante()!=null && reporte.getEstatus()!=null) {
-			envioDatos.put("condition", " AND SP.CVE_NSS= '"+reporte.getNss()+"' AND SP.NOM_PERSONA LIKE '%"+reporte.getNomContratante()+"%' AND SC.IND_ACTIVO= "+reporte.getEstatus()+"");
-		}else if(reporte.getCurp()==null && reporte.getNss()!=null && reporte.getNomContratante()==null && reporte.getEstatus()!=null) {
-			envioDatos.put("condition", " AND SP.CVE_NSS= '"+reporte.getNss()+" AND SC.IND_ACTIVO= "+reporte.getEstatus()+"");
-		}else if(reporte.getCurp()==null && reporte.getNss()!=null && reporte.getNomContratante()!=null && reporte.getEstatus()==null) {
-			envioDatos.put("condition", " AND SP.CVE_NSS= '"+reporte.getNss()+" AND SP.NOM_PERSONA LIKE '%"+reporte.getNomContratante()+"%'");
-		}else if(reporte.getCurp()==null && reporte.getNss()==null && reporte.getNomContratante()!=null && reporte.getEstatus()!=null) {
-			
-			envioDatos.put("condition", " AND SP.NOM_PERSONA LIKE '%"+reporte.getNomContratante()+"%' AND SC.IND_ACTIVO= "+reporte.getEstatus()+"");
-		}else if(reporte.getCurp()!=null && reporte.getNss()!=null && reporte.getNomContratante()!=null && reporte.getEstatus()!=null) {
-			envioDatos.put("condition", " AND SP.CVE_CURP= '"+reporte.getCurp()+"' AND SP.CVE_NSS= '"+reporte.getNss()+"' AND SP.NOM_PERSONA LIKE '%"+reporte.getNomContratante()+"%' AND SC.IND_ACTIVO= "+reporte.getEstatus()+"");
-		}else if(reporte.getCurp()!=null && reporte.getNss()==null && reporte.getNomContratante()!=null && reporte.getEstatus()!=null) {
-			envioDatos.put("condition", " AND SP.CVE_CURP= '"+reporte.getCurp()+"' AND SP.NOM_PERSONA LIKE '%"+reporte.getNomContratante()+"%' AND SC.IND_ACTIVO= "+reporte.getEstatus()+"");
+		StringBuilder condition= new StringBuilder();
+		if(reporte.getCurp()!=null) {
+			condition.append(" AND SP.CVE_CURP= '"+reporte.getCurp()+"'");
 		}
-		else if(reporte.getCurp()==null && reporte.getNss()==null && reporte.getNomContratante()==null && reporte.getEstatus()==null) {
-			envioDatos.put("condition", ";");
+	    if(reporte.getNss()!=null) {
+			condition.append(" AND SP.CVE_NSS= '"+reporte.getNss()+"'");
 		}
+	    if (reporte.getNomContratante()!=null) {
+			condition.append(" AND SP.NOM_PERSONA LIKE '%"+reporte.getNomContratante()+"%'");
+		} 
+	    if(reporte.getEstatus()!=null) {
+			condition.append(" AND SC.IND_ACTIVO= "+reporte.getEstatus()+"");
+		}condition.append(";");
+		envioDatos.put("condition", condition.toString());		
 		log.info("--->  "+envioDatos.toString());
 		envioDatos.put("rutaNombreReporte", reporte.getRutaNombreReporte());
 		envioDatos.put("tipoReporte", reporte.getTipoReporte());
