@@ -83,6 +83,12 @@ public class UsrContra {
 		this.idPersona=contraR.getIdPersona();
 	}
 
+	//Tablas
+	public static final String SVC_PERSONA = "SVC_PERSONA SP";
+	
+	//Parameters
+	public static final String ID_USUARIO_MODIFICA = "ID_USUARIO_MODIFICA";
+	public static final String FEC_ACTUALIZACION = "FEC_ACTUALIZACION";
 	
 	public DatosRequest buscarContratantes(DatosRequest request, FiltrosUsrContraRequest filtros) {
 		Map<String, Object> parametros = new HashMap<>();
@@ -100,7 +106,7 @@ public class UsrContra {
 				"SP.DES_TELEFONO AS tel",
 				"SC.IND_ACTIVO AS estatus")
 		.from("SVC_CONTRATANTE SC")
-		.join("SVC_PERSONA SP", "SC.ID_PERSONA = SP.ID_PERSONA");
+		.join(SVC_PERSONA, "SC.ID_PERSONA = SP.ID_PERSONA");
 		StringBuilder where= new StringBuilder();
 		if(filtros.getCurp()!=null) {
 			where.append(" AND SP.CVE_CURP= '"+filtros.getCurp()+"'");
@@ -159,7 +165,7 @@ public class UsrContra {
 				"CP.DES_ESTADO",
 				"SC.IND_ACTIVO")
 		.from("SVC_CONTRATANTE SC")
-		.join("SVC_PERSONA SP", "SC.ID_PERSONA = SP.ID_PERSONA")
+		.join(SVC_PERSONA, "SC.ID_PERSONA = SP.ID_PERSONA")
 		.join("SVC_PAIS SPA", "SP.ID_PAIS = SPA.ID_PAIS")
 		.join("SVC_ESTADO SE", "SP.ID_ESTADO = SE.ID_ESTADO")
 		.join("SVT_DOMICILIO SD", "SC.ID_DOMICILIO = SD.ID_DOMICILIO")
@@ -262,10 +268,10 @@ public class UsrContra {
 		q.agregarParametroValues("ID_ESTADO", ""+ this.idlugarNac+ "");
 		q.agregarParametroValues("DES_TELEFONO", "'" + this.tel + "'");
 		q.agregarParametroValues("DES_CORREO", "'"+ this.correo +"'");
-		q.agregarParametroValues("ID_USUARIO_MODIFICA", ""+idUsuario+"");
-		q.agregarParametroValues("FEC_ACTUALIZACION", ""+AppConstantes.CURRENT_TIMESTAMP+"");
+		q.agregarParametroValues(ID_USUARIO_MODIFICA, ""+idUsuario+"");
+		q.agregarParametroValues(FEC_ACTUALIZACION, ""+AppConstantes.CURRENT_TIMESTAMP+"");
 		q.addWhere("ID_PERSONA= " +this.idPersona);
-		String query = q.obtenerQueryActualizar(); //"$$" + editarDomic();
+		String query = q.obtenerQueryActualizar();
 		log.info(query);
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes(StandardCharsets.UTF_8));
 		        parametro.put(AppConstantes.QUERY, encoded);
@@ -288,8 +294,8 @@ public class UsrContra {
 			q.agregarParametroValues("DES_MUNICIPIO", "'"+this.desMunicpio+"'");
 			q.agregarParametroValues("DES_ESTADO", "'"+ this.desEstado +"'");
 		}
-		q.agregarParametroValues("ID_USUARIO_MODIFICA", ""+idUsuario+"");
-		q.agregarParametroValues("FEC_ACTUALIZACION", ""+AppConstantes.CURRENT_TIMESTAMP+"");
+		q.agregarParametroValues(ID_USUARIO_MODIFICA, ""+idUsuario+"");
+		q.agregarParametroValues(FEC_ACTUALIZACION, ""+AppConstantes.CURRENT_TIMESTAMP+"");
 		q.addWhere("ID_DOMICILIO= " +this.idDomicilio);
 		String query =q.obtenerQueryActualizar();
 		log.info(query);
@@ -309,8 +315,8 @@ public class UsrContra {
         	 q.agregarParametroValues("ID_USUARIO_BAJA", ""+idUsuario+"" );
  			q.agregarParametroValues("FEC_BAJA", ""+AppConstantes.CURRENT_TIMESTAMP+"");
         }else {
-        	  q.agregarParametroValues("ID_USUARIO_MODIFICA", ""+idUsuario+"" );
-  			q.agregarParametroValues("FEC_ACTUALIZACION", ""+AppConstantes.CURRENT_TIMESTAMP+"");
+        	  q.agregarParametroValues(ID_USUARIO_MODIFICA, ""+idUsuario+"" );
+  			q.agregarParametroValues(FEC_ACTUALIZACION, ""+AppConstantes.CURRENT_TIMESTAMP+"");
         }
 		q.addWhere("ID_CONTRATANTE =" + idContratante);
         String query = q.obtenerQueryActualizar();
@@ -327,7 +333,7 @@ public class UsrContra {
 		Map<String, Object> parametro = new HashMap<>();
 		SelectQueryUtil queryUtil = new SelectQueryUtil();
 		queryUtil.select("COUNT(*) AS c")
-		.from("SVC_PERSONA SP")
+		.from(SVC_PERSONA)
 		.join("SVC_CONTRATANTE SV", "SP.ID_PERSONA = SV.ID_PERSONA");
 		queryUtil.where("SP.NOM_PERSONA= :nombre").and("SP.NOM_PRIMER_APELLIDO= :paterno")
 		.and("SP.NOM_SEGUNDO_APELLIDO= :materno").and("SP.CVE_RFC= :rfc").and("SP.ID_PERSONA != :id")
