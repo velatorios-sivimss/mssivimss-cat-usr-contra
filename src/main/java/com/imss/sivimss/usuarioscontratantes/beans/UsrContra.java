@@ -101,59 +101,22 @@ public class UsrContra {
 				"SC.IND_ACTIVO AS estatus")
 		.from("SVC_CONTRATANTE SC")
 		.join("SVC_PERSONA SP", "SC.ID_PERSONA = SP.ID_PERSONA");
-		if(filtros.getCurp()!=null && filtros.getNss()==null && filtros.getNomContratante()==null && filtros.getEstatus()==null) {
-			queryUtil.where("SP.CVE_CURP= '"+filtros.getCurp()+"'");
-		}else if(filtros.getCurp()==null && filtros.getNss()!=null && filtros.getNomContratante()==null && filtros.getEstatus()==null) {
-			queryUtil.where("SP.CVE_NSS= '"+filtros.getNss()+"'");
-			}else if(filtros.getCurp()==null && filtros.getNss()==null && filtros.getNomContratante()!=null && filtros.getEstatus()==null) {
-			queryUtil.where("SP.NOM_PERSONA LIKE '%"+filtros.getNomContratante()+"%'");
-		}else if(filtros.getCurp()==null && filtros.getNss()==null && filtros.getNomContratante()==null && filtros.getEstatus()!=null) {
-			queryUtil.where("SC.IND_ACTIVO= "+filtros.getEstatus()+"");
-		}else if(filtros.getCurp()!=null && filtros.getNss()!=null && filtros.getNomContratante()==null && filtros.getEstatus()==null) {
-			queryUtil.where("SP.CVE_CURP=:curp").and("SP.CVE_NSS=:nss")
-			.setParameter("curp", filtros.getCurp())
-			.setParameter("nss", filtros.getNss());
-		}else if(filtros.getCurp()!=null && filtros.getNss()==null && filtros.getNomContratante()!=null && filtros.getEstatus()==null) {
-			queryUtil.where("SP.CVE_CURP=:curp").and("SP.NOM_PERSONA LIKE '%"+filtros.getNomContratante()+"%'")
-			.setParameter("curp", filtros.getCurp());
-		}else if(filtros.getCurp()!=null && filtros.getNss()==null && filtros.getNomContratante()==null && filtros.getEstatus()!=null) {
-			queryUtil.where("SP.CVE_CURP=:curp").and("SC.IND_ACTIVO=:estatus")
-			.setParameter("curp", filtros.getCurp())
-			.setParameter("estatus", filtros.getEstatus());
-		}else if(filtros.getCurp()!=null && filtros.getNss()!=null && filtros.getNomContratante()!=null && filtros.getEstatus()==null) {
-			queryUtil.where("SP.CVE_CURP=:curp").and("SP.CVE_NSS=:nss").and("SP.NOM_PERSONA LIKE '%"+filtros.getNomContratante()+"%'")
-			.setParameter("curp", filtros.getCurp())
-			.setParameter("nss", filtros.getNss());
-		}else if(filtros.getCurp()!=null && filtros.getNss()!=null && filtros.getNomContratante()==null && filtros.getEstatus()!=null) {
-			queryUtil.where("SP.CVE_CURP=:curp").and("SP.CVE_NSS=:nss").and("SC.IND_ACTIVO=:estatus")
-			.setParameter("curp", filtros.getCurp())
-			.setParameter("nss", filtros.getNss())
-			.setParameter("estatus", filtros.getEstatus());
-		}else if(filtros.getCurp()==null && filtros.getNss()!=null && filtros.getNomContratante()!=null && filtros.getEstatus()!=null) {
-			queryUtil.where("SP.CVE_NSS=:nss").and("SP.NOM_PERSONA LIKE '%"+filtros.getNomContratante()+"%'").and("SC.IND_ACTIVO=:estatus")
-			.setParameter("nss", filtros.getNss())
-			.setParameter("estatus", filtros.getEstatus());
-		}else if(filtros.getCurp()==null && filtros.getNss()!=null && filtros.getNomContratante()==null && filtros.getEstatus()!=null) {
-			queryUtil.where("SP.CVE_NSS=:nss").and("SC.IND_ACTIVO=:estatus")
-			.setParameter("nss", filtros.getNss())
-			.setParameter("estatus", filtros.getEstatus());
-		}else if(filtros.getCurp()==null && filtros.getNss()!=null && filtros.getNomContratante()!=null && filtros.getEstatus()==null) {
-			queryUtil.where("SP.CVE_NSS=:nss").and("SP.NOM_PERSONA LIKE '%"+filtros.getNomContratante()+"%'")
-			.setParameter("nss", filtros.getNss());
-		}else if(filtros.getCurp()==null && filtros.getNss()==null && filtros.getNomContratante()!=null && filtros.getEstatus()!=null) {
-			queryUtil.where("SP.NOM_PERSONA LIKE '%"+filtros.getNomContratante()+"%'").and("SC.IND_ACTIVO=:estatus")
-			.setParameter("estatus", filtros.getEstatus());
-		}else if(filtros.getCurp()!=null && filtros.getNss()!=null && filtros.getNomContratante()!=null && filtros.getEstatus()!=null) {
-			queryUtil.where("SP.CVE_CURP=:curp").and("SP.CVE_NSS=:nss").and("SP.NOM_PERSONA LIKE '%"+filtros.getNomContratante()+"%'").and("SC.IND_ACTIVO=:estatus")
-			.setParameter("curp", filtros.getCurp())
-			.setParameter("nss", filtros.getNss())
-			.setParameter("estatus", filtros.getEstatus());
-		}else if(filtros.getCurp()!=null && filtros.getNss()==null && filtros.getNomContratante()!=null && filtros.getEstatus()!=null) {
-			queryUtil.where("SP.CVE_CURP=:curp").and("SP.NOM_PERSONA LIKE '%"+filtros.getNomContratante()+"%'").and("SC.IND_ACTIVO=:estatus")
-			.setParameter("curp", filtros.getCurp())
-			.setParameter("estatus", filtros.getEstatus());
+		StringBuilder where= new StringBuilder();
+		if(filtros.getCurp()!=null) {
+			where.append(" AND SP.CVE_CURP= '"+filtros.getCurp()+"'");
 		}
-		String query = obtieneQuery(queryUtil);
+	    if(filtros.getNss()!=null) {
+			where.append(" AND SP.CVE_NSS= '"+filtros.getNss()+"'");
+		}
+	    if (filtros.getNomContratante()!=null) {
+			where.append(" AND SP.NOM_PERSONA LIKE '%"+filtros.getNomContratante()+"%'");
+		} 
+	    if(filtros.getEstatus()!=null) {
+			where.append(" AND SC.IND_ACTIVO= "+filtros.getEstatus()+"");
+		}
+	    if(where.toString().contains("AND")) {
+	    	queryUtil.where(where.toString().replaceFirst("AND", ""));
+	    }String query = obtieneQuery(queryUtil);
 		log.info("-> " +query);
 		String encoded = encodedQuery(query);
 	    parametros.put(AppConstantes.QUERY, encoded);
@@ -364,7 +327,8 @@ public class UsrContra {
 		Map<String, Object> parametro = new HashMap<>();
 		SelectQueryUtil queryUtil = new SelectQueryUtil();
 		queryUtil.select("COUNT(*) AS c")
-		.from("SVC_PERSONA SP");
+		.from("SVC_PERSONA SP")
+		.join("SVC_CONTRATANTE SV", "SP.ID_PERSONA = SV.ID_PERSONA");
 		queryUtil.where("SP.NOM_PERSONA= :nombre").and("SP.NOM_PRIMER_APELLIDO= :paterno")
 		.and("SP.NOM_SEGUNDO_APELLIDO= :materno").and("SP.CVE_RFC= :rfc").and("SP.ID_PERSONA != :id")
 		.setParameter("nombre", nombre).setParameter("paterno", paterno).setParameter("materno", materno)
@@ -402,7 +366,6 @@ public class UsrContra {
 			condition.append(" AND SC.IND_ACTIVO= "+reporte.getEstatus()+"");
 		}condition.append(";");
 		envioDatos.put("condition", condition.toString());		
-		log.info("--->  "+envioDatos.toString());
 		envioDatos.put("rutaNombreReporte", reporte.getRutaNombreReporte());
 		envioDatos.put("tipoReporte", reporte.getTipoReporte());
 		if(reporte.getTipoReporte().equals("xls")) {
