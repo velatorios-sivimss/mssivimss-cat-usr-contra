@@ -131,20 +131,27 @@ public class UsrContraImpl implements UsrContraService {
 		if(usrContraR.getIdPersona()==null || usrContraR.getIdDomicilio()==null){
 			logUtil.crearArchivoLog(Level.WARNING.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),INFORMACION_INCOMPLETA, MODIFICACION, authentication, usuario);
 			throw new BadRequestException(HttpStatus.BAD_REQUEST, INFORMACION_INCOMPLETA);
-		} else if(!validarRegistro(usrContraR.getNombre(), usrContraR.getPaterno(), usrContraR.getMaterno(), usrContraR.getRfc(), usrContraR.getIdPersona(),  authentication)) {			
-			logUtil.crearArchivoLog(Level.WARNING.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"REGUSTRO DUPLICADO", MODIFICACION, authentication, usuario);
-			throw new BadRequestException(HttpStatus.BAD_REQUEST, "registro dulplicado");
-		}
+		} 
+		Response<?> response = providerRestTemplate.consumirServicio(usrContra.validacionActualizar(usrContraR.getNombre(), usrContraR.getPaterno(), usrContraR.getMaterno(), usrContraR.getRfc(), usrContraR.getIdPersona()).getDatos(), urlConsulta + PATH_CONSULTA,
+				authentication);
+		Object rst=response.getDatos();
+		log.info("---> "+rst.toString());
+		if(rst.toString().equals("[{c=1}]")) {
+			response.setMensaje("56");
+			response.setDatos(null);
+			logUtil.crearArchivoLog(Level.WARNING.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"REGUSTRO DUPLICADO", CONSULTA, authentication, usuario);
+			return response;
+			}
+		
 		try {
 		UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
 		usrContra = new UsrContra(usrContraR);
 		Date dateF = new SimpleDateFormat("dd-MM-yyyy").parse(usrContraR.getFecNacimiento());
         DateFormat fechaFormat = new SimpleDateFormat("yyyy-MM-dd", new Locale("es", "MX"));
         String fecha=fechaFormat.format(dateF);
-        log.info("--->"+fecha);
         usrContra.setFecNacimiento(fecha);
 		usrContra.setIdUsuario(usuarioDto.getIdUsuario());
-		Response<?>response = providerRestTemplate.consumirServicio(usrContra.editarPersona().getDatos(), urlConsulta + PATH_ACTUALIZAR,
+		response = providerRestTemplate.consumirServicio(usrContra.editarPersona().getDatos(), urlConsulta + PATH_ACTUALIZAR,
 					authentication);
 			logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"PERSONA ACTUALIZADA CORRECTAMENTE", MODIFICACION, authentication, usuario);
 			if(response.getCodigo()==200) {
@@ -174,7 +181,7 @@ public class UsrContraImpl implements UsrContraService {
 	return response;
 	}
 	
-	private boolean validarRegistro(String nombre, String paterno, String materno, String rfc, Integer idPersona, Authentication authentication) throws IOException {
+	/*private boolean validarRegistro(String nombre, String paterno, String materno, String rfc, Integer idPersona, Authentication authentication) throws IOException {
 		Response<?> response= providerRestTemplate.consumirServicio(usrContra.validacionActualizar(nombre, paterno, materno, rfc, idPersona).getDatos(), urlConsulta + PATH_CONSULTA,
 				authentication);
 		if (response.getCodigo()==200){
@@ -183,7 +190,7 @@ public class UsrContraImpl implements UsrContraService {
 	return rst.toString().equals("[]");
 		}
 		 throw new BadRequestException(HttpStatus.BAD_REQUEST, "ERROR AL REGISTRAR EL CONTRATANTE");
-	}
+	}*/
 
 	@Override
 	public Response<?> descargarCatContratantes(DatosRequest request, Authentication authentication)
@@ -191,8 +198,10 @@ public class UsrContraImpl implements UsrContraService {
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		ReporteDto reporte= gson.fromJson(datosJson, ReporteDto.class);
 		Map<String, Object> envioDatos = new UsrContra().reporteCatUsrContra(reporte);
-		return providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes ,
+		Response<?> response = providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes,
 				authentication);
+		logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"SE GENERO CORRECRAMENTE EL REPORTE DE USUARIOS CONTRATANTES", IMPRIMIR, authentication, usuario);
+		return response;
 	}
 	}
 

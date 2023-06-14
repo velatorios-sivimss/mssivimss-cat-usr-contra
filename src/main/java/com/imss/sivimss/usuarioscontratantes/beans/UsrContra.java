@@ -1,18 +1,12 @@
 package com.imss.sivimss.usuarioscontratantes.beans;
 
 import java.nio.charset.StandardCharsets;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.xml.bind.DatatypeConverter;
 
-import com.imss.sivimss.usuarioscontratantes.exception.BadRequestException;
-import com.imss.sivimss.usuarioscontratantes.model.ContratanteModel;
-import com.imss.sivimss.usuarioscontratantes.model.DomicilioModel;
 import com.imss.sivimss.usuarioscontratantes.model.request.FiltrosUsrContraRequest;
 import com.imss.sivimss.usuarioscontratantes.model.request.ReporteDto;
 import com.imss.sivimss.usuarioscontratantes.model.request.UsrContraRequest;
@@ -365,12 +359,11 @@ public class UsrContra {
 	}
 
 
-	public DatosRequest  validacionActualizar(String nombre, String paterno, String materno, String rfc,
-			Integer idPersona) {
+	public DatosRequest  validacionActualizar(String nombre, String paterno, String materno, String rfc, Integer idPersona) {
 		DatosRequest request= new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
 		SelectQueryUtil queryUtil = new SelectQueryUtil();
-		queryUtil.select("*")
+		queryUtil.select("COUNT(*) AS c")
 		.from("SVC_PERSONA SP");
 		queryUtil.where("SP.NOM_PERSONA= :nombre").and("SP.NOM_PRIMER_APELLIDO= :paterno")
 		.and("SP.NOM_SEGUNDO_APELLIDO= :materno").and("SP.CVE_RFC= :rfc").and("SP.ID_PERSONA != :id")

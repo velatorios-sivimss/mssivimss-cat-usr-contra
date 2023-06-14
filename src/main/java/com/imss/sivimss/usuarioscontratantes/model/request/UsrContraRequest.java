@@ -1,8 +1,6 @@
 package com.imss.sivimss.usuarioscontratantes.model.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
-import com.imss.sivimss.usuarioscontratantes.model.ContratanteModel;
-import com.imss.sivimss.usuarioscontratantes.model.DomicilioModel;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,6 +40,4 @@ public class UsrContraRequest {
 	private Integer idPersona;
 	private Integer idDomicilio;
 	private Boolean estatus;
-//	private ContratanteModel contraModel;
-	//private DomicilioModel domicModel;
 }
