@@ -1,6 +1,5 @@
 package com.imss.sivimss.usuarioscontratantes.model.response;
 
-import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonProperty;

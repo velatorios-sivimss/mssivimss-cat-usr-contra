@@ -15,7 +15,7 @@ import com.imss.sivimss.usuarioscontratantes.util.NoRedirectSimpleClientHttpRequ
 public class UsuariosContratantesApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(UsuariosContratantesApplication.class, args);
+		SpringApplication.run(UsuariosContratantesApplication.class);
 	}
 
 	@Bean

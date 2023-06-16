@@ -89,6 +89,8 @@ public class UsrContra {
 	//Parameters
 	public static final String ID_USUARIO_MODIFICA = "ID_USUARIO_MODIFICA";
 	public static final String FEC_ACTUALIZACION = "FEC_ACTUALIZACION";
+	public static final String ID_USUARIO_ALTA = "ID_USUARIO_ALTA";
+	public static final String FEC_ALTA = "FEC_ALTA";
 	
 	public DatosRequest buscarContratantes(DatosRequest request, FiltrosUsrContraRequest filtros) {
 		Map<String, Object> parametros = new HashMap<>();
@@ -195,38 +197,17 @@ public class UsrContra {
 		q.agregarParametroValues("ID_ESTADO", "'"+ this.idlugarNac+ "'");
 		q.agregarParametroValues("DES_CORREO", "'"+ this.correo +"'");
 		q.agregarParametroValues("DES_TELEFONO", "'" + this.tel + "'");
-		q.agregarParametroValues("ID_USUARIO_ALTA", ""+idUsuario+"");
-		q.agregarParametroValues("FEC_ALTA", ""+AppConstantes.CURRENT_TIMESTAMP+"");
-		String query = q.obtenerQueryInsertar()+"$$"  + insertarDomic(); //+"$$"+ insertarContra();
-		log.info(query);
-		String encoded = DatatypeConverter.printBase64Binary(query.getBytes(StandardCharsets.UTF_8));
+		q.agregarParametroValues(ID_USUARIO_ALTA, ""+idUsuario+"");
+		q.agregarParametroValues(FEC_ALTA, ""+AppConstantes.CURRENT_TIMESTAMP+"");
+		String query = q.obtenerQueryInsertar() +"$$"+ insertarContra();
+		String encoded = encodedQuery(query);      
 		        parametro.put(AppConstantes.QUERY, encoded);
 		        parametro.put("separador","$$");
 		        parametro.put("replace","idTabla");
-		       // parametro.put("replace","idTabla2");
 		        request.setDatos(parametro);
 		return request;
 	}
-
-
-	private String insertarContra() {
-		DatosRequest request = new DatosRequest();
-		Map<String, Object> parametro = new HashMap<>();
-		final QueryHelper q = new QueryHelper("INSERT INTO SVC_CONTRATANTE");
-		q.agregarParametroValues("ID_PERSONA", "idTabla");
-		q.agregarParametroValues("ID_DOMICILIO", "idTabla");
-		q.agregarParametroValues("IND_ACTIVO", "1");
-		q.agregarParametroValues("ID_USUARIO_ALTA", ""+idUsuario+"");
-		q.agregarParametroValues("FEC_ALTA", ""+AppConstantes.CURRENT_TIMESTAMP+"");
-		String query = q.obtenerQueryInsertar();
 	
-		String encoded = DatatypeConverter.printBase64Binary(query.getBytes(StandardCharsets.UTF_8));
-		        parametro.put(AppConstantes.QUERY, encoded);
-		        request.setDatos(parametro);
-		        return query;
-	}
-
-
 	private String insertarDomic() {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
@@ -238,14 +219,29 @@ public class UsrContra {
 		q.agregarParametroValues("DES_COLONIA", "'"+this.desColonia + "'");
 		q.agregarParametroValues("DES_MUNICIPIO", "'"+this.desMunicpio+"'");
 		q.agregarParametroValues("DES_ESTADO", "'"+ this.desEstado +"'");
-		q.agregarParametroValues("ID_USUARIO_ALTA", ""+idUsuario+"");
-		q.agregarParametroValues("FEC_ALTA", ""+AppConstantes.CURRENT_TIMESTAMP+"");
-		String query = q.obtenerQueryInsertar(); //+"$$"+ insertarContra();
+		q.agregarParametroValues(ID_USUARIO_ALTA, ""+idUsuario+"");
+		q.agregarParametroValues(FEC_ALTA, ""+AppConstantes.CURRENT_TIMESTAMP+"");
+		String query = q.obtenerQueryInsertar(); 
 		log.info(query);
-		String encoded = DatatypeConverter.printBase64Binary(query.getBytes(StandardCharsets.UTF_8));
+		String encoded = encodedQuery(query);
 		        parametro.put(AppConstantes.QUERY, encoded);
-		    parametro.put("separador","$$");
-		        parametro.put("replace","idTabla");
+		        request.setDatos(parametro);
+		        return query;
+	}
+	
+
+	private String insertarContra() {
+		DatosRequest request = new DatosRequest();
+		Map<String, Object> parametro = new HashMap<>();
+		final QueryHelper q = new QueryHelper("INSERT INTO SVC_CONTRATANTE");
+		q.agregarParametroValues("ID_PERSONA", "idTabla");
+		q.agregarParametroValues("ID_DOMICILIO", "idTabla2");
+		q.agregarParametroValues("IND_ACTIVO", "1");
+		q.agregarParametroValues(ID_USUARIO_ALTA, ""+idUsuario+"");
+		q.agregarParametroValues(FEC_ALTA, ""+AppConstantes.CURRENT_TIMESTAMP+"");
+		String query = q.obtenerQueryInsertar();
+		String encoded = encodedQuery(query);
+		        parametro.put(AppConstantes.QUERY, encoded);
 		        request.setDatos(parametro);
 		        return query;
 	}
@@ -273,7 +269,7 @@ public class UsrContra {
 		q.addWhere("ID_PERSONA= " +this.idPersona);
 		String query = q.obtenerQueryActualizar();
 		log.info(query);
-		String encoded = DatatypeConverter.printBase64Binary(query.getBytes(StandardCharsets.UTF_8));
+		String encoded = encodedQuery(query);
 		        parametro.put(AppConstantes.QUERY, encoded);
 		         parametro.put("separador","$$");
 		        request.setDatos(parametro);
@@ -299,7 +295,7 @@ public class UsrContra {
 		q.addWhere("ID_DOMICILIO= " +this.idDomicilio);
 		String query =q.obtenerQueryActualizar();
 		log.info(query);
-		String encoded = DatatypeConverter.printBase64Binary(query.getBytes(StandardCharsets.UTF_8));
+		String encoded = encodedQuery(query);
 		parametro.put(AppConstantes.QUERY, encoded);
 		request.setDatos(parametro);
 		return request;
@@ -379,6 +375,4 @@ public class UsrContra {
 		}
 		return envioDatos;
 	}
-
-
 }
