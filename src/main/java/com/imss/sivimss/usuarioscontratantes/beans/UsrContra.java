@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.xml.bind.DatatypeConverter;
 
+import com.imss.sivimss.usuarioscontratantes.exception.BadRequestException;
 import com.imss.sivimss.usuarioscontratantes.model.request.FiltrosUsrContraRequest;
 import com.imss.sivimss.usuarioscontratantes.model.request.ReporteDto;
 import com.imss.sivimss.usuarioscontratantes.model.request.UsrContraRequest;
@@ -91,6 +92,7 @@ public class UsrContra {
 	public static final String FEC_ACTUALIZACION = "FEC_ACTUALIZACION";
 	public static final String ID_USUARIO_ALTA = "ID_USUARIO_ALTA";
 	public static final String FEC_ALTA = "FEC_ALTA";
+	public static final String IND_ACTIVO = "IND_ACTIVO";
 	
 	public DatosRequest buscarContratantes(DatosRequest request, FiltrosUsrContraRequest filtros) {
 		Map<String, Object> parametros = new HashMap<>();
@@ -208,7 +210,7 @@ public class UsrContra {
 		return request;
 	}
 	
-	private String insertarDomic() {
+	public DatosRequest insertarDomic() {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
 		final QueryHelper q = new QueryHelper("INSERT INTO SVT_DOMICILIO");
@@ -221,24 +223,44 @@ public class UsrContra {
 		q.agregarParametroValues("DES_ESTADO", "'"+ this.desEstado +"'");
 		q.agregarParametroValues(ID_USUARIO_ALTA, ""+idUsuario+"");
 		q.agregarParametroValues(FEC_ALTA, ""+AppConstantes.CURRENT_TIMESTAMP+"");
-		String query = q.obtenerQueryInsertar(); 
+		String query = q.obtenerQueryInsertar() +"$$" +actualizarContra(idUsuario); 
 		log.info(query);
+		String encoded = encodedQuery(query);
+		        parametro.put(AppConstantes.QUERY, encoded);
+		        parametro.put("separador","$$");
+		        parametro.put("replace","idTabla");
+		        request.setDatos(parametro);
+		        return request;
+	}
+	
+
+	private String actualizarContra(Integer idUsuario) {
+		DatosRequest request = new DatosRequest();
+		Map<String, Object> parametro = new HashMap<>();
+		final QueryHelper q = new QueryHelper("UPDATE SVC_CONTRATANTE ");
+		q.agregarParametroValues("CVE_MATRICULA = NULL ", "NULL");
+		q.agregarParametroValues("ID_DOMICILIO", "idTabla");
+		q.agregarParametroValues(IND_ACTIVO, "1");
+		q.agregarParametroValues(ID_USUARIO_ALTA, ""+idUsuario+"");
+		q.agregarParametroValues(FEC_ALTA, ""+AppConstantes.CURRENT_TIMESTAMP+"") ;
+		q.addWhere("IND_ACTIVO=0 AND CVE_MATRICULA='idDomicilio'");
+		String query = q.obtenerQueryActualizar();
+		log.info("---> "+query);
 		String encoded = encodedQuery(query);
 		        parametro.put(AppConstantes.QUERY, encoded);
 		        request.setDatos(parametro);
 		        return query;
 	}
-	
 
 	private String insertarContra() {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
 		final QueryHelper q = new QueryHelper("INSERT INTO SVC_CONTRATANTE");
 		q.agregarParametroValues("ID_PERSONA", "idTabla");
-		q.agregarParametroValues("ID_DOMICILIO", "idTabla2");
-		q.agregarParametroValues("IND_ACTIVO", "1");
-		q.agregarParametroValues(ID_USUARIO_ALTA, ""+idUsuario+"");
-		q.agregarParametroValues(FEC_ALTA, ""+AppConstantes.CURRENT_TIMESTAMP+"");
+		q.agregarParametroValues("ID_DOMICILIO", "1");
+		q.agregarParametroValues(IND_ACTIVO, "0");
+		q.agregarParametroValues(ID_USUARIO_ALTA, "1");
+		q.agregarParametroValues("CVE_MATRICULA", "'idDomicilio'");
 		String query = q.obtenerQueryInsertar();
 		String encoded = encodedQuery(query);
 		        parametro.put(AppConstantes.QUERY, encoded);
@@ -306,7 +328,7 @@ public class UsrContra {
 		DatosRequest request = new DatosRequest();
         Map<String, Object> parametro = new HashMap<>();
         final QueryHelper q = new QueryHelper("UPDATE SVC_CONTRATANTE");
-        q.agregarParametroValues("IND_ACTIVO", ""+estatus+"");
+        q.agregarParametroValues(IND_ACTIVO, ""+estatus+"");
         if(Boolean.FALSE.equals(estatus)) {
         	 q.agregarParametroValues("ID_USUARIO_BAJA", ""+idUsuario+"" );
  			q.agregarParametroValues("FEC_BAJA", ""+AppConstantes.CURRENT_TIMESTAMP+"");
@@ -343,14 +365,6 @@ public class UsrContra {
 				return request;
 	}
 
-	private static String obtieneQuery(SelectQueryUtil queryUtil) {
-        return queryUtil.build();
-    }
-	
-	private static String encodedQuery(String query) {
-        return DatatypeConverter.printBase64Binary(query.getBytes(StandardCharsets.UTF_8));
-    }
-
 
 	public Map<String, Object> reporteCatUsrContra(ReporteDto reporte) {
 		Map<String, Object> envioDatos = new HashMap<>();
@@ -375,4 +389,58 @@ public class UsrContra {
 		}
 		return envioDatos;
 	}
+
+	public DatosRequest catalogoPais(DatosRequest request) {
+		Map<String, Object> parametros = new HashMap<>();
+		SelectQueryUtil queryUtil = new SelectQueryUtil();
+		queryUtil.select("ID_PAIS AS id",
+				"DES_PAIS AS pais")
+		.from("SVC_PAIS");
+	    String query = obtieneQuery(queryUtil);
+		String encoded = encodedQuery(query);
+	    parametros.put(AppConstantes.QUERY, encoded);
+        request.getDatos().remove("datos");
+	    request.setDatos(parametros);
+		return request;
+	}
+
+	public DatosRequest catalogoEstado(DatosRequest request) {
+		Map<String, Object> parametros = new HashMap<>();
+		SelectQueryUtil queryUtil = new SelectQueryUtil();
+		queryUtil.select("ID_ESTADO AS id",
+				"DES_ESTADO AS estado")
+		.from("SVC_ESTADO");
+	    String query = obtieneQuery(queryUtil);
+		String encoded = encodedQuery(query);
+	    parametros.put(AppConstantes.QUERY, encoded);
+        request.getDatos().remove("datos");
+	    request.setDatos(parametros);
+		return request;
+	}
+
+	public DatosRequest catalogoCp(DatosRequest request, Integer cp) {
+        Map<String, Object> parametro = new HashMap<>();
+        SelectQueryUtil query = new SelectQueryUtil();
+        query.select("CVE_CODIGO_POSTAL AS codigoPostal", 
+        		"DES_COLONIA AS colonia",
+                        "DES_MNPIO AS municipio", 
+                        "DES_ESTADO AS estado")
+                .from("SVC_CP")
+                .where("CVE_CODIGO_POSTAL=" + cp);
+        String consulta = query.build();
+        String encoded = DatatypeConverter.printBase64Binary(consulta.getBytes());
+        parametro.put(AppConstantes.QUERY, encoded);
+        request.setDatos(parametro);
+        return request;
+	}
+	
+	private static String obtieneQuery(SelectQueryUtil queryUtil) {
+        return queryUtil.build();
+    }
+	
+	private static String encodedQuery(String query) {
+        return DatatypeConverter.printBase64Binary(query.getBytes(StandardCharsets.UTF_8));
+    }
+
+
 }

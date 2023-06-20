@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.imss.sivimss.usuarioscontratantes.beans.UsrContra;
 import com.imss.sivimss.usuarioscontratantes.exception.BadRequestException;
+import com.imss.sivimss.usuarioscontratantes.model.request.CatalogoRequest;
 import com.imss.sivimss.usuarioscontratantes.model.request.FiltrosUsrContraRequest;
 import com.imss.sivimss.usuarioscontratantes.model.request.ReporteDto;
 import com.imss.sivimss.usuarioscontratantes.model.request.UsrContraRequest;
@@ -98,6 +99,7 @@ public class UsrContraImpl implements UsrContraService {
 		if (response.getCodigo() == 200) {
 			usrResponse = Arrays.asList(modelMapper.map(response.getDatos(), UsrContraResponse[].class));
 			response.setDatos(ConvertirGenerico.convertInstanceOfObject(usrResponse));
+			logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"DETALLE CONTRATANTE OK", CONSULTA, authentication, usuario);
 		}
 		return response;
 	}
@@ -112,6 +114,12 @@ public class UsrContraImpl implements UsrContraService {
 			usrContra.setIdUsuario(usuarioDto.getIdUsuario());
 			Response<?>	 response = providerRestTemplate.consumirServicio(usrContra.insertarPersona().getDatos(), urlConsulta+DIAGONAL + PATH_CREAR_MULTIPLE,
 						authentication);
+		if(response.getCodigo()==200){
+			
+			providerRestTemplate.consumirServicio(usrContra.insertarDomic().getDatos(), urlConsulta+DIAGONAL + PATH_CREAR_MULTIPLE,
+					authentication);
+		}
+				
 			logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"Estatus OK", ALTA, authentication, usuario);
 			return response;		
 			
@@ -202,6 +210,28 @@ public class UsrContraImpl implements UsrContraService {
 				authentication);
 		logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"SE GENERO CORRECRAMENTE EL REPORTE DE USUARIOS CONTRATANTES", IMPRIMIR, authentication, usuario);
 		return response;
+	}
+
+	@Override
+	public Response<?> buscarCatalogos(DatosRequest request, Authentication authentication) throws IOException {
+		Response<?> response = null;
+		String datosJson = String.valueOf(request.getDatos().get("datos"));
+		CatalogoRequest catalogo = gson.fromJson(datosJson, CatalogoRequest.class);
+		if(catalogo.getIdCatalogo()==1) {
+		     response = providerRestTemplate.consumirServicio(usrContra.catalogoPais(request).getDatos(), urlConsulta+DIAGONAL + PATH_CONSULTA,
+					authentication);	
+		}else if(catalogo.getIdCatalogo()==2) {
+			 response = providerRestTemplate.consumirServicio(usrContra.catalogoEstado(request).getDatos(), urlConsulta+DIAGONAL + PATH_CONSULTA,
+					authentication);
+		}else if(catalogo.getIdCatalogo()==3) {
+			  response = providerRestTemplate.consumirServicio(usrContra.catalogoCp(request, catalogo.getCp()).getDatos(), urlConsulta+DIAGONAL + PATH_CONSULTA,
+					authentication);	
+		}else if(catalogo.getIdCatalogo()>3 || catalogo.getIdCatalogo()==null) {
+			 logUtil.crearArchivoLog(Level.WARNING.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"INFORMACION INCOMPLETA", CONSULTA, authentication, usuario);
+			 throw new BadRequestException(HttpStatus.BAD_REQUEST, "FALTA_INFORMACION");
+		}
+		logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"CATALOGOS OK", CONSULTA, authentication, usuario);
+			return response;		
 	}
 	}
 
