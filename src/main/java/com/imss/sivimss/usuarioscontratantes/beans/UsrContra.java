@@ -93,6 +93,7 @@ public class UsrContra {
 	public static final String ID_USUARIO_ALTA = "ID_USUARIO_ALTA";
 	public static final String FEC_ALTA = "FEC_ALTA";
 	public static final String IND_ACTIVO = "IND_ACTIVO";
+	public static final String ID_TABLA = "idTabla";
 	
 	public DatosRequest buscarContratantes(DatosRequest request, FiltrosUsrContraRequest filtros) {
 		Map<String, Object> parametros = new HashMap<>();
@@ -132,7 +133,7 @@ public class UsrContra {
 	    parametros.put(AppConstantes.QUERY, encoded);
 	    parametros.put("pagina",filtros.getPagina());
         parametros.put("tamanio",filtros.getTamanio());
-        request.getDatos().remove("datos");
+        request.getDatos().remove(AppConstantes.DATOS);
 	    request.setDatos(parametros);
 		return request;
 	}
@@ -205,7 +206,7 @@ public class UsrContra {
 		String encoded = encodedQuery(query);      
 		        parametro.put(AppConstantes.QUERY, encoded);
 		        parametro.put("separador","$$");
-		        parametro.put("replace","idTabla");
+		        parametro.put("replace", ID_TABLA);
 		        request.setDatos(parametro);
 		return request;
 	}
@@ -228,7 +229,7 @@ public class UsrContra {
 		String encoded = encodedQuery(query);
 		        parametro.put(AppConstantes.QUERY, encoded);
 		        parametro.put("separador","$$");
-		        parametro.put("replace","idTabla");
+		        parametro.put("replace", ID_TABLA);
 		        request.setDatos(parametro);
 		        return request;
 	}
@@ -238,13 +239,13 @@ public class UsrContra {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
 		final QueryHelper q = new QueryHelper("UPDATE SVC_CONTRATANTE ");
-		q.agregarParametroValues("CVE_MATRICULA = NULL ", "NULL");
-		q.agregarParametroValues("ID_DOMICILIO", "idTabla");
+		q.agregarParametroValues("CVE_MATRICULA", "NULL");
+		q.agregarParametroValues("ID_DOMICILIO", ID_TABLA);
 		q.agregarParametroValues(IND_ACTIVO, "1");
 		q.agregarParametroValues(ID_USUARIO_ALTA, ""+idUsuario+"");
 		q.agregarParametroValues(FEC_ALTA, ""+AppConstantes.CURRENT_TIMESTAMP+"") ;
 		q.addWhere("IND_ACTIVO=0 AND CVE_MATRICULA='idDomicilio'");
-		String query = q.obtenerQueryActualizar();
+		String query = q.obtenerQueryActualizar().replace("coalesce(NULL,CVE_MATRICULA)", "NULL");
 		log.info("---> "+query);
 		String encoded = encodedQuery(query);
 		        parametro.put(AppConstantes.QUERY, encoded);
@@ -256,7 +257,7 @@ public class UsrContra {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
 		final QueryHelper q = new QueryHelper("INSERT INTO SVC_CONTRATANTE");
-		q.agregarParametroValues("ID_PERSONA", "idTabla");
+		q.agregarParametroValues("ID_PERSONA", ID_TABLA);
 		q.agregarParametroValues("ID_DOMICILIO", "1");
 		q.agregarParametroValues(IND_ACTIVO, "0");
 		q.agregarParametroValues(ID_USUARIO_ALTA, "1");
@@ -293,7 +294,6 @@ public class UsrContra {
 		log.info(query);
 		String encoded = encodedQuery(query);
 		        parametro.put(AppConstantes.QUERY, encoded);
-		         parametro.put("separador","$$");
 		        request.setDatos(parametro);
 		return request;
 	}
@@ -399,7 +399,7 @@ public class UsrContra {
 	    String query = obtieneQuery(queryUtil);
 		String encoded = encodedQuery(query);
 	    parametros.put(AppConstantes.QUERY, encoded);
-        request.getDatos().remove("datos");
+	    request.getDatos().remove(AppConstantes.DATOS);
 	    request.setDatos(parametros);
 		return request;
 	}
@@ -413,7 +413,7 @@ public class UsrContra {
 	    String query = obtieneQuery(queryUtil);
 		String encoded = encodedQuery(query);
 	    parametros.put(AppConstantes.QUERY, encoded);
-        request.getDatos().remove("datos");
+        request.getDatos().remove(AppConstantes.DATOS);
 	    request.setDatos(parametros);
 		return request;
 	}
@@ -430,6 +430,7 @@ public class UsrContra {
         String consulta = query.build();
         String encoded = DatatypeConverter.printBase64Binary(consulta.getBytes());
         parametro.put(AppConstantes.QUERY, encoded);
+        request.getDatos().remove(AppConstantes.DATOS);
         request.setDatos(parametro);
         return request;
 	}
