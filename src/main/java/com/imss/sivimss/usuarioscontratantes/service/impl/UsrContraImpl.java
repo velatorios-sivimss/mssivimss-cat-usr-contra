@@ -115,12 +115,11 @@ public class UsrContraImpl implements UsrContraService {
 			Response<?>	 response = providerRestTemplate.consumirServicio(usrContra.insertarPersona().getDatos(), urlConsulta+DIAGONAL + PATH_CREAR_MULTIPLE,
 						authentication);
 		if(response.getCodigo()==200){
-			
+			logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"Datos generales correctos", ALTA, authentication, usuario);
 			providerRestTemplate.consumirServicio(usrContra.insertarDomic().getDatos(), urlConsulta+DIAGONAL + PATH_CREAR_MULTIPLE,
 					authentication);
 		}
-				
-			logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"Estatus OK", ALTA, authentication, usuario);
+		logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"Domicilio contratante correcto", ALTA, authentication, usuario);
 			return response;		
 			
 		}catch (Exception e) {
