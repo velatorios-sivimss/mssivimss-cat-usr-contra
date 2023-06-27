@@ -18,4 +18,5 @@ public class CatalogoRequest {
 	
    private Integer idCatalogo;
    private Integer cp;
+   private String nombre;
 }

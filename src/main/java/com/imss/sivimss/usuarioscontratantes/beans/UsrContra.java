@@ -165,9 +165,9 @@ public class UsrContra {
 				"SD.NUM_EXTERIOR",
 				"SD.NUM_INTERIOR",
 				"SD.DES_CP",
-				"CP.DES_COLONIA",
-				"CP.DES_MNPIO",
-				"CP.DES_ESTADO",
+				"IFNULL(CP.DES_COLONIA, SD.DES_COLONIA) AS DES_COLONIA",
+				"IFNULL(CP.DES_ESTADO, SD.DES_ESTADO) AS DES_ESTADO",
+				"IFNULL(CP.DES_MNPIO, SD.DES_MUNICIPIO) AS DES_MUNPIO",
 				"SC.IND_ACTIVO")
 		.from("SVC_CONTRATANTE SC")
 		.join(SVC_PERSONA, "SC.ID_PERSONA = SP.ID_PERSONA")
@@ -420,19 +420,36 @@ public class UsrContra {
 
 	public DatosRequest catalogoCp(DatosRequest request, Integer cp) {
         Map<String, Object> parametro = new HashMap<>();
-        SelectQueryUtil query = new SelectQueryUtil();
-        query.select("CVE_CODIGO_POSTAL AS codigoPostal", 
+        SelectQueryUtil queryUtil = new SelectQueryUtil();
+        queryUtil.select("CVE_CODIGO_POSTAL AS codigoPostal", 
         		"DES_COLONIA AS colonia",
                         "DES_MNPIO AS municipio", 
                         "DES_ESTADO AS estado")
                 .from("SVC_CP")
                 .where("CVE_CODIGO_POSTAL=" + cp);
-        String consulta = query.build();
-        String encoded = DatatypeConverter.printBase64Binary(consulta.getBytes());
+        String query = obtieneQuery(queryUtil);
+        String encoded = encodedQuery(query);
         parametro.put(AppConstantes.QUERY, encoded);
         request.getDatos().remove(AppConstantes.DATOS);
         request.setDatos(parametro);
         return request;
+	}
+	
+	public DatosRequest buscarContra(DatosRequest request, String nombre) {
+		 Map<String, Object> parametro = new HashMap<>();
+	        SelectQueryUtil queryUtil = new SelectQueryUtil();
+	        queryUtil.select("CONCAT(SP.NOM_PERSONA,' ', " 
+	        		+"SP.NOM_PRIMER_APELLIDO, ' ', "
+	                        +"SP.NOM_SEGUNDO_APELLIDO) AS nombre")
+	                .from("SVC_CONTRATANTE SC")
+	                .join(SVC_PERSONA, "SC.ID_PERSONA = SP.ID_PERSONA");
+	        queryUtil.where("SP.NOM_PERSONA LIKE " +"'%"+nombre +"%'");
+	        String query = obtieneQuery(queryUtil);
+	        String encoded = encodedQuery(query);
+	        parametro.put(AppConstantes.QUERY, encoded);
+	        request.getDatos().remove(AppConstantes.DATOS);
+	        request.setDatos(parametro);
+	        return request;
 	}
 	
 	private static String obtieneQuery(SelectQueryUtil queryUtil) {
@@ -442,6 +459,5 @@ public class UsrContra {
 	private static String encodedQuery(String query) {
         return DatatypeConverter.printBase64Binary(query.getBytes(StandardCharsets.UTF_8));
     }
-
 
 }
