@@ -211,21 +211,27 @@ public class UsrContraImpl implements UsrContraService {
 		return response;
 	}
 
+	
 	@Override
 	public Response<?> buscarCatalogos(DatosRequest request, Authentication authentication) throws IOException {
 		Response<?> response = null;
 		String datosJson = String.valueOf(request.getDatos().get("datos"));
-		CatalogoRequest catalogo = gson.fromJson(datosJson, CatalogoRequest.class);
-		if(catalogo.getIdCatalogo()==1) {
+		CatalogoRequest catalogo = gson.fromJson(datosJson, CatalogoRequest.class);	
+		if(catalogo.getIdCatalogo()==null && catalogo.getNombre()!=null) {
+				response = providerRestTemplate.consumirServicio(usrContra.buscarContra(request, catalogo.getNombre()).getDatos(), urlConsulta+DIAGONAL + PATH_CONSULTA,
+						authentication);	
+		}
+		else if(catalogo.getIdCatalogo()==1) {
 		     response = providerRestTemplate.consumirServicio(usrContra.catalogoPais(request).getDatos(), urlConsulta+DIAGONAL + PATH_CONSULTA,
 					authentication);	
 		}else if(catalogo.getIdCatalogo()==2) {
 			 response = providerRestTemplate.consumirServicio(usrContra.catalogoEstado(request).getDatos(), urlConsulta+DIAGONAL + PATH_CONSULTA,
 					authentication);
-		}else if(catalogo.getIdCatalogo()==3) {
+		}else if(catalogo.getIdCatalogo()==3 && catalogo.getCp()!=null) {
 			  response = providerRestTemplate.consumirServicio(usrContra.catalogoCp(request, catalogo.getCp()).getDatos(), urlConsulta+DIAGONAL + PATH_CONSULTA,
 					authentication);	
-		}else if(catalogo.getIdCatalogo()>3 || catalogo.getIdCatalogo()==null) {
+		}
+		 else {
 			 logUtil.crearArchivoLog(Level.WARNING.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"INFORMACION INCOMPLETA", CONSULTA, authentication, usuario);
 			 throw new BadRequestException(HttpStatus.BAD_REQUEST, "FALTA_INFORMACION");
 		}
