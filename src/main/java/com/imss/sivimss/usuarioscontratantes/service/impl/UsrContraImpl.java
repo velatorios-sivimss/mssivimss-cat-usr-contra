@@ -65,6 +65,8 @@ public class UsrContraImpl implements UsrContraService {
 	@Value("${endpoints.ms-reportes}")
 	private String urlReportes;
 
+	@Value("${formato_fecha}")
+	private String fecFormat;
 	@Autowired
 	private ProviderServiceRestTemplate providerRestTemplate;
 	
@@ -85,7 +87,7 @@ public class UsrContraImpl implements UsrContraService {
 	        Integer tamanio = Integer.valueOf(Integer.parseInt(request.getDatos().get("tamanio").toString()));
 	        filtros.setTamanio(tamanio.toString());
 	        filtros.setPagina(pagina.toString());
-		Response<?> response = providerRestTemplate.consumirServicio(usrContra.buscarContratantes(request, filtros).getDatos(), urlConsulta+DIAGONAL+PATH_PAGINADO,
+		Response<?> response = providerRestTemplate.consumirServicio(usrContra.buscarContratantes(request, filtros, fecFormat).getDatos(), urlConsulta+DIAGONAL+PATH_PAGINADO,
 					authentication);
 			logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"CONSULTA CONTRATANTES OK", CONSULTA, authentication, usuario);
 			return response;
@@ -94,7 +96,7 @@ public class UsrContraImpl implements UsrContraService {
 	@Override
 	public Response<?> detalleContratante(DatosRequest request, Authentication authentication) throws IOException { 
 		List<UsrContraResponse> usrResponse;
-		Response<?> response = providerRestTemplate.consumirServicio(usrContra.verDetalle(request).getDatos(), urlConsulta+DIAGONAL + PATH_CONSULTA,
+		Response<?> response = providerRestTemplate.consumirServicio(usrContra.verDetalle(request, fecFormat).getDatos(), urlConsulta+DIAGONAL + PATH_CONSULTA,
 				authentication);
 		if (response.getCodigo() == 200) {
 			usrResponse = Arrays.asList(modelMapper.map(response.getDatos(), UsrContraResponse[].class));
