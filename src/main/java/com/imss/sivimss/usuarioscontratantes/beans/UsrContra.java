@@ -98,7 +98,7 @@ public class UsrContra {
 	//JOIN
 	public static final String SC_ID_PERSONA_SP_ID_PERSONA = "SC.ID_PERSONA = SP.ID_PERSONA";
 	
-	public DatosRequest buscarContratantes(DatosRequest request, FiltrosUsrContraRequest filtros, String fecFormat) {
+	public DatosRequest buscarContratantes(DatosRequest request, FiltrosUsrContraRequest filtros) {
 		Map<String, Object> parametros = new HashMap<>();
 		SelectQueryUtil queryUtil = new SelectQueryUtil();
 		queryUtil.select("SC.ID_CONTRATANTE AS idContratante",
@@ -110,7 +110,7 @@ public class UsrContra {
 				+ "SP.NOM_PRIMER_APELLIDO, ' ',"
 				+ "SP.NOM_SEGUNDO_APELLIDO) AS nomContratante",
 				"SP.CVE_RFC AS rfc",
-				"DATE_FORMAT(SP.FEC_NAC, '"+fecFormat+"') AS fecNacimiento",
+				"DATE_FORMAT(SP.FEC_NAC, '%d-%m-%Y') AS fecNacimiento",
 				"SP.DES_TELEFONO AS tel",
 				"SC.IND_ACTIVO AS estatus")
 		.from(SVC_CONTRATANTE)
@@ -141,7 +141,7 @@ public class UsrContra {
 		return request;
 	}
 
-	public DatosRequest verDetalle(DatosRequest request, String fecFormat) {
+	public DatosRequest verDetalle(DatosRequest request) {
 		Map<String, Object> parametros = new HashMap<>();
 		String palabra = request.getDatos().get("palabra").toString();
 		SelectQueryUtil queryUtil = new SelectQueryUtil();
@@ -153,7 +153,12 @@ public class UsrContra {
 			    "SP.NOM_SEGUNDO_APELLIDO",
 				"SP.CVE_RFC",
 				"SP.NUM_SEXO",
-				"DATE_FORMAT(SP.FEC_NAC, '"+fecFormat+"')",
+				"CASE "
+				+"WHEN SP.NUM_SEXO=1 THEN 'MUJER' "
+				+ "WHEN SP.NUM_SEXO=2 THEN 'HOMBRE' "
+				+ "ELSE NULL END AS SEXO",
+				"IFNULL(NULL, SP.DES_OTRO_SEXO) AS DES_OTRO_SEXO",
+				"DATE_FORMAT(SP.FEC_NAC, '%d-%m-%Y')",
 				"SP.ID_PAIS",
 				"SPA.DES_PAIS",
 				"CASE "
@@ -281,7 +286,7 @@ public class UsrContra {
 		q.agregarParametroValues("NOM_PRIMER_APELLIDO", "'" + this.paterno + "'");
 		q.agregarParametroValues("NOM_SEGUNDO_APELLIDO", "'" + this.materno + "'");
 		q.agregarParametroValues("CVE_RFC", "'" +this.rfc +"'");
-		q.agregarParametroValues("NUM_SEXO", "" +this.numSexo +"");
+			q.agregarParametroValues("NUM_SEXO", "" +this.numSexo +"");	
 		if(this.otroSexo!=null) {
 			q.agregarParametroValues("DES_OTRO_SEXO", "'" +this.otroSexo +"'");		
 		}
