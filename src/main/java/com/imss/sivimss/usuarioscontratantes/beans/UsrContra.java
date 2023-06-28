@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.xml.bind.DatatypeConverter;
 
-import com.imss.sivimss.usuarioscontratantes.exception.BadRequestException;
 import com.imss.sivimss.usuarioscontratantes.model.request.FiltrosUsrContraRequest;
 import com.imss.sivimss.usuarioscontratantes.model.request.ReporteDto;
 import com.imss.sivimss.usuarioscontratantes.model.request.UsrContraRequest;
@@ -86,6 +85,7 @@ public class UsrContra {
 
 	//Tablas
 	public static final String SVC_PERSONA = "SVC_PERSONA SP";
+	public static final String SVC_CONTRATANTE = "SVC_CONTRATANTE SC";
 	
 	//Parameters
 	public static final String ID_USUARIO_MODIFICA = "ID_USUARIO_MODIFICA";
@@ -94,6 +94,9 @@ public class UsrContra {
 	public static final String FEC_ALTA = "FEC_ALTA";
 	public static final String IND_ACTIVO = "IND_ACTIVO";
 	public static final String ID_TABLA = "idTabla";
+	
+	//JOIN
+	public static final String SC_ID_PERSONA_SP_ID_PERSONA = "SC.ID_PERSONA = SP.ID_PERSONA";
 	
 	public DatosRequest buscarContratantes(DatosRequest request, FiltrosUsrContraRequest filtros) {
 		Map<String, Object> parametros = new HashMap<>();
@@ -105,13 +108,13 @@ public class UsrContra {
 				"SP.CVE_NSS AS nss",
 				"CONCAT(SP.NOM_PERSONA, ' ',"
 				+ "SP.NOM_PRIMER_APELLIDO, ' ',"
-				+ "SP.NOM_SEGUNDO_APELLIDO) AS NomContratante",
+				+ "SP.NOM_SEGUNDO_APELLIDO) AS nomContratante",
 				"SP.CVE_RFC AS rfc",
 				"DATE_FORMAT(SP.FEC_NAC, '%d-%m-%Y') AS fecNacimiento",
 				"SP.DES_TELEFONO AS tel",
 				"SC.IND_ACTIVO AS estatus")
-		.from("SVC_CONTRATANTE SC")
-		.join(SVC_PERSONA, "SC.ID_PERSONA = SP.ID_PERSONA");
+		.from(SVC_CONTRATANTE)
+		.join(SVC_PERSONA, SC_ID_PERSONA_SP_ID_PERSONA);
 		StringBuilder where= new StringBuilder();
 		if(filtros.getCurp()!=null) {
 			where.append(" AND SP.CVE_CURP= '"+filtros.getCurp()+"'");
@@ -150,7 +153,12 @@ public class UsrContra {
 			    "SP.NOM_SEGUNDO_APELLIDO",
 				"SP.CVE_RFC",
 				"SP.NUM_SEXO",
-				"DATE_FORMAT(SP.FEC_NAC, '%d/%m/%Y')",
+				"CASE "
+				+"WHEN SP.NUM_SEXO=1 THEN 'MUJER' "
+				+ "WHEN SP.NUM_SEXO=2 THEN 'HOMBRE' "
+				+ "ELSE NULL END AS SEXO",
+				"IFNULL(NULL, SP.DES_OTRO_SEXO) AS DES_OTRO_SEXO",
+				"DATE_FORMAT(SP.FEC_NAC, '%d-%m-%Y')",
 				"SP.ID_PAIS",
 				"SPA.DES_PAIS",
 				"CASE "
@@ -169,8 +177,8 @@ public class UsrContra {
 				"IFNULL(CP.DES_ESTADO, SD.DES_ESTADO) AS DES_ESTADO",
 				"IFNULL(CP.DES_MNPIO, SD.DES_MUNICIPIO) AS DES_MUNPIO",
 				"SC.IND_ACTIVO")
-		.from("SVC_CONTRATANTE SC")
-		.join(SVC_PERSONA, "SC.ID_PERSONA = SP.ID_PERSONA")
+		.from(SVC_CONTRATANTE)
+		.join(SVC_PERSONA, SC_ID_PERSONA_SP_ID_PERSONA)
 		.join("SVC_PAIS SPA", "SP.ID_PAIS = SPA.ID_PAIS")
 		.join("SVC_ESTADO SE", "SP.ID_ESTADO = SE.ID_ESTADO")
 		.join("SVT_DOMICILIO SD", "SC.ID_DOMICILIO = SD.ID_DOMICILIO")
@@ -278,7 +286,7 @@ public class UsrContra {
 		q.agregarParametroValues("NOM_PRIMER_APELLIDO", "'" + this.paterno + "'");
 		q.agregarParametroValues("NOM_SEGUNDO_APELLIDO", "'" + this.materno + "'");
 		q.agregarParametroValues("CVE_RFC", "'" +this.rfc +"'");
-		q.agregarParametroValues("NUM_SEXO", "" +this.numSexo +"");
+			q.agregarParametroValues("NUM_SEXO", "" +this.numSexo +"");	
 		if(this.otroSexo!=null) {
 			q.agregarParametroValues("DES_OTRO_SEXO", "'" +this.otroSexo +"'");		
 		}
@@ -441,8 +449,8 @@ public class UsrContra {
 	        queryUtil.select("CONCAT(SP.NOM_PERSONA,' ', " 
 	        		+"SP.NOM_PRIMER_APELLIDO, ' ', "
 	                        +"SP.NOM_SEGUNDO_APELLIDO) AS nombre")
-	                .from("SVC_CONTRATANTE SC")
-	                .join(SVC_PERSONA, "SC.ID_PERSONA = SP.ID_PERSONA");
+	                .from(SVC_CONTRATANTE)
+	                .join(SVC_PERSONA, SC_ID_PERSONA_SP_ID_PERSONA);
 	        queryUtil.where("SP.NOM_PERSONA LIKE " +"'%"+nombre +"%'");
 	        String query = obtieneQuery(queryUtil);
 	        String encoded = encodedQuery(query);

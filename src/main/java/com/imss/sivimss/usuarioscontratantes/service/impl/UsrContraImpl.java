@@ -65,6 +65,8 @@ public class UsrContraImpl implements UsrContraService {
 	@Value("${endpoints.ms-reportes}")
 	private String urlReportes;
 
+	@Value("${formato_fecha}")
+	private String fecFormat;
 	@Autowired
 	private ProviderServiceRestTemplate providerRestTemplate;
 	
@@ -87,8 +89,16 @@ public class UsrContraImpl implements UsrContraService {
 	        filtros.setPagina(pagina.toString());
 		Response<?> response = providerRestTemplate.consumirServicio(usrContra.buscarContratantes(request, filtros).getDatos(), urlConsulta+DIAGONAL+PATH_PAGINADO,
 					authentication);
+		if(response.getDatos().toString().contains("id")){
 			logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"CONSULTA CONTRATANTES OK", CONSULTA, authentication, usuario);
 			return response;
+		}else {
+			logUtil.crearArchivoLog(Level.WARNING.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"No se encontro información relacionada a tu busqueda.", CONSULTA, authentication, usuario);
+			response.setDatos(null);
+			response.setMensaje("45");
+			return response;
+		}
+			
 	}
 
 	@Override
