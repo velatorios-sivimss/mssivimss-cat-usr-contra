@@ -185,6 +185,7 @@ public class UsrContra {
 		.leftJoin("SVC_CP CP", "SD.DES_CP = CP.CVE_CODIGO_POSTAL");
 		queryUtil.where("SC.ID_CONTRATANTE= :id")
 		.setParameter("id", Integer.parseInt(palabra));
+		queryUtil.groupBy("SD.DES_CP");
 		String query = obtieneQuery(queryUtil);
 		log.info("-> " +query);
 		String encoded = encodedQuery(query);
