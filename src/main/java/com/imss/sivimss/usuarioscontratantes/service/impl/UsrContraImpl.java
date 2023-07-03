@@ -192,7 +192,10 @@ public class UsrContraImpl implements UsrContraService {
 		usrContra.setIdUsuario(usuarioDto.getIdUsuario());
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		UsrContraRequest usrContraR = gson.fromJson(datosJson, UsrContraRequest.class);	
-	  Response<?> response = providerRestTemplate.consumirServicio(usrContra.cambiarEstatus(usrContraR.getEstatus(), usrContraR.getIdContratante()).getDatos(), urlConsulta+DIAGONAL +PATH_ACTUALIZAR,
+        if(usrContraR.getIdContratante()==null || usrContraR.getEstatus()==null) {
+        	 throw new BadRequestException(HttpStatus.BAD_REQUEST, INFORMACION_INCOMPLETA);
+		}
+		Response<?> response = providerRestTemplate.consumirServicio(usrContra.cambiarEstatus(usrContraR.getEstatus(), usrContraR.getIdContratante()).getDatos(), urlConsulta+DIAGONAL +PATH_ACTUALIZAR,
 				authentication);
 		logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"Todo correcto", BAJA, authentication, usuario);
 	return response;
@@ -232,7 +235,7 @@ public class UsrContraImpl implements UsrContraService {
 		}
 		 else {
 			 logUtil.crearArchivoLog(Level.WARNING.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"INFORMACION INCOMPLETA", CONSULTA, authentication, usuario);
-			 throw new BadRequestException(HttpStatus.BAD_REQUEST, "FALTA_INFORMACION");
+			 throw new BadRequestException(HttpStatus.BAD_REQUEST, INFORMACION_INCOMPLETA);
 		}
 		logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"CATALOGOS OK", CONSULTA, authentication, usuario);
 			return response;		

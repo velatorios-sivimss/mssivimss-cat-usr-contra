@@ -170,14 +170,14 @@ public class UsrContra {
 				+ "ELSE 'Extranjera' END "
 				+ "AS NACIONALIDAD",
 				"SP.ID_ESTADO",
-				"SE.DES_ESTADO",
+				"SE.DES_ESTADO AS DES_LUGAR_NACIMIENTO",
 				"SP.DES_TELEFONO",
 				"SP.DES_CORREO",
 				"SD.DES_CALLE",
 				"SD.NUM_EXTERIOR",
 				"SD.NUM_INTERIOR",
 				"SD.DES_CP",
-				"IFNULL( SD.DES_COLONIA, CP.DES_COLONIA) AS DES_COLONIA",
+				"IFNULL(SD.DES_COLONIA, CP.DES_COLONIA) AS DES_COLONIA",
 				"IFNULL(CP.DES_ESTADO, SD.DES_ESTADO) AS DES_ESTADO",
 				"IFNULL(CP.DES_MNPIO, SD.DES_MUNICIPIO) AS DES_MUNPIO",
 				"SC.IND_ACTIVO")
@@ -291,7 +291,7 @@ public class UsrContra {
 		q.agregarParametroValues("NOM_PRIMER_APELLIDO", "'" + this.paterno + "'");
 		q.agregarParametroValues("NOM_SEGUNDO_APELLIDO", "'" + this.materno + "'");
 		q.agregarParametroValues("CVE_RFC", "'" +this.rfc +"'");
-			q.agregarParametroValues("NUM_SEXO", "" +this.numSexo +"");	
+		q.agregarParametroValues("NUM_SEXO", "" +this.numSexo +"");	
 		if(this.otroSexo!=null) {
 			q.agregarParametroValues("DES_OTRO_SEXO", "'" +this.otroSexo +"'");		
 		}

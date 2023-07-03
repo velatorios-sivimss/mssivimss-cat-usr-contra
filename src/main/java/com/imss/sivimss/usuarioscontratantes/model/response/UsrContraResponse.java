@@ -69,7 +69,7 @@ public class UsrContraResponse {
 	private Integer ID_ESTADO;
 	
 	@JsonProperty(value = "lugarNacimiento")
-	private String ESTADO;
+	private String LUGAR_NACIMIENTO;
 	
 	@JsonProperty(value = "numSexo")
 	private Integer NUM_SEXO;
@@ -97,6 +97,8 @@ public class UsrContraResponse {
 	
 	@JsonProperty(value = "estado")
 	private String DES_ESTADO;
+	
+	
 	
 	@JsonProperty(value = "estatus")
 	private Boolean IND_ACTIVO;
