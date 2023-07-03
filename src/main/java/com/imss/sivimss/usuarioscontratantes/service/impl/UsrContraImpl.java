@@ -152,9 +152,9 @@ public class UsrContraImpl implements UsrContraService {
 		Response<?> response = providerRestTemplate.consumirServicio(usrContra.validacionActualizar(usrContraR.getNombre(), usrContraR.getPaterno(), usrContraR.getMaterno(), usrContraR.getRfc(), usrContraR.getIdPersona()).getDatos(), urlConsulta +DIAGONAL+ PATH_CONSULTA,
 				authentication);
 		Object rst=response.getDatos();
-		log.info("---> "+rst.toString());
 		if(rst.toString().equals("[{c=1}]")) {
-			response.setMensaje("56");
+			response.setError(true);
+			response.setMensaje("59");
 			response.setDatos(null);
 			logUtil.crearArchivoLog(Level.WARNING.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"REGISTRO DUPLICADO", CONSULTA, authentication, usuario);
 			return response;
@@ -192,23 +192,15 @@ public class UsrContraImpl implements UsrContraService {
 		usrContra.setIdUsuario(usuarioDto.getIdUsuario());
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		UsrContraRequest usrContraR = gson.fromJson(datosJson, UsrContraRequest.class);	
-	  Response<?> response = providerRestTemplate.consumirServicio(usrContra.cambiarEstatus(usrContraR.getEstatus(), usrContraR.getIdContratante()).getDatos(), urlConsulta+DIAGONAL +PATH_ACTUALIZAR,
+        if(usrContraR.getIdContratante()==null || usrContraR.getEstatus()==null) {
+        	 throw new BadRequestException(HttpStatus.BAD_REQUEST, INFORMACION_INCOMPLETA);
+		}
+		Response<?> response = providerRestTemplate.consumirServicio(usrContra.cambiarEstatus(usrContraR.getEstatus(), usrContraR.getIdContratante()).getDatos(), urlConsulta+DIAGONAL +PATH_ACTUALIZAR,
 				authentication);
 		logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"Todo correcto", BAJA, authentication, usuario);
 	return response;
 	}
 	
-	/*private boolean validarRegistro(String nombre, String paterno, String materno, String rfc, Integer idPersona, Authentication authentication) throws IOException {
-		Response<?> response= providerRestTemplate.consumirServicio(usrContra.validacionActualizar(nombre, paterno, materno, rfc, idPersona).getDatos(), urlConsulta + PATH_CONSULTA,
-				authentication);
-		if (response.getCodigo()==200){
-	Object rst=response.getDatos();
-	log.info("---> "+rst.toString());
-	return rst.toString().equals("[]");
-		}
-		 throw new BadRequestException(HttpStatus.BAD_REQUEST, "ERROR AL REGISTRAR EL CONTRATANTE");
-	}*/
-
 	@Override
 	public Response<?> descargarCatContratantes(DatosRequest request, Authentication authentication)
 			throws IOException {
@@ -243,7 +235,7 @@ public class UsrContraImpl implements UsrContraService {
 		}
 		 else {
 			 logUtil.crearArchivoLog(Level.WARNING.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"INFORMACION INCOMPLETA", CONSULTA, authentication, usuario);
-			 throw new BadRequestException(HttpStatus.BAD_REQUEST, "FALTA_INFORMACION");
+			 throw new BadRequestException(HttpStatus.BAD_REQUEST, INFORMACION_INCOMPLETA);
 		}
 		logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"CATALOGOS OK", CONSULTA, authentication, usuario);
 			return response;		
