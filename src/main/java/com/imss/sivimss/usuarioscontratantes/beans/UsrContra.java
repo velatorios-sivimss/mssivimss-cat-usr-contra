@@ -393,7 +393,11 @@ public class UsrContra {
 		} 
 	    if(reporte.getEstatus()!=null) {
 			condition.append(" AND SC.IND_ACTIVO= "+reporte.getEstatus()+"");
-		}condition.append(";");
+		}
+	    if((!Boolean.TRUE.equals(reporte.getEstatus()))) {
+	    	condition.append(" OR SC.IND_ACTIVO IS NULL");
+	    }
+	    condition.append(";");
 		envioDatos.put("condition", condition.toString());		
 		envioDatos.put("rutaNombreReporte", reporte.getRutaNombreReporte());
 		envioDatos.put("tipoReporte", reporte.getTipoReporte());
