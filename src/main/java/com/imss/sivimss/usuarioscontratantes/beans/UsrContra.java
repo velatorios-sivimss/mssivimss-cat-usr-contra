@@ -128,6 +128,9 @@ public class UsrContra {
 	    if(filtros.getEstatus()!=null) {
 			where.append(" AND SC.IND_ACTIVO= "+filtros.getEstatus()+"");
 		}
+	    if(!Boolean.TRUE.equals(filtros.getEstatus())) {
+	    	where.append(" OR SC.IND_ACTIVO IS NULL");
+	    }
 	    if(where.toString().contains("AND")) {
 	    	queryUtil.where(where.toString().replaceFirst("AND", ""));
 	    }String query = obtieneQuery(queryUtil);
@@ -146,6 +149,7 @@ public class UsrContra {
 		String palabra = request.getDatos().get("palabra").toString();
 		SelectQueryUtil queryUtil = new SelectQueryUtil();
 		queryUtil.select("SC.ID_CONTRATANTE",
+				"SC.ID_DOMICILIO",
 				"SP.CVE_CURP",
 				"SP.CVE_NSS",
 				"SP.NOM_PERSONA",
@@ -157,13 +161,13 @@ public class UsrContra {
 				+"WHEN SP.NUM_SEXO=1 THEN 'MUJER' "
 				+ "WHEN SP.NUM_SEXO=2 THEN 'HOMBRE' "
 				+ "ELSE NULL END AS SEXO",
-				"IFNULL(NULL, SP.DES_OTRO_SEXO) AS DES_OTRO_SEXO",
+				"SP.DES_OTRO_SEXO",
 				"DATE_FORMAT(SP.FEC_NAC, '%d-%m-%Y')",
 				"SP.ID_PAIS",
 				"SPA.DES_PAIS",
 				"CASE "
-				+ "WHEN SP.ID_PAIS=119 THEN 'MEXICANA' "
-				+ "ELSE 'EXTRANJERA' END "
+				+ "WHEN SP.ID_PAIS=119 THEN 'Mexicana' "
+				+ "ELSE 'Extranjera' END "
 				+ "AS NACIONALIDAD",
 				"SP.ID_ESTADO",
 				"SE.DES_ESTADO",
@@ -173,7 +177,7 @@ public class UsrContra {
 				"SD.NUM_EXTERIOR",
 				"SD.NUM_INTERIOR",
 				"SD.DES_CP",
-				"IFNULL(CP.DES_COLONIA, SD.DES_COLONIA) AS DES_COLONIA",
+				"IFNULL( SD.DES_COLONIA, CP.DES_COLONIA) AS DES_COLONIA",
 				"IFNULL(CP.DES_ESTADO, SD.DES_ESTADO) AS DES_ESTADO",
 				"IFNULL(CP.DES_MNPIO, SD.DES_MUNICIPIO) AS DES_MUNPIO",
 				"SC.IND_ACTIVO")
@@ -248,7 +252,7 @@ public class UsrContra {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
 		final QueryHelper q = new QueryHelper("UPDATE SVC_CONTRATANTE ");
-		q.agregarParametroValues("CVE_MATRICULA", "NULL");
+		q.agregarParametroValues("CVE_MATRICULA",  null);
 		q.agregarParametroValues("ID_DOMICILIO", ID_TABLA);
 		q.agregarParametroValues(IND_ACTIVO, "1");
 		q.agregarParametroValues(ID_USUARIO_ALTA, ""+idUsuario+"");
@@ -316,8 +320,8 @@ public class UsrContra {
 		q.agregarParametroValues("NUM_EXTERIOR", "'" + this.numExte + "'");
 		q.agregarParametroValues("NUM_INTERIOR", "'" + this.numInt + "'");
 		q.agregarParametroValues("DES_CP", "" +this.cp +"");
-		if(this.desColonia!=null || this.desMunicpio!=null) {
-			q.agregarParametroValues("DES_COLONIA", "'"+this.desColonia + "'");
+		q.agregarParametroValues("DES_COLONIA", "'"+this.desColonia + "'");
+		if(this.desEstado!=null || this.desMunicpio!=null) {
 			q.agregarParametroValues("DES_MUNICIPIO", "'"+this.desMunicpio+"'");
 			q.agregarParametroValues("DES_ESTADO", "'"+ this.desEstado +"'");
 		}

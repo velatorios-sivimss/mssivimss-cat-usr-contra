@@ -22,6 +22,9 @@ public class UsrContraResponse {
 	
 	@JsonProperty(value = "idContratante")
 	private Integer ID_CONTRATANTE;
+	
+	@JsonProperty(value = "idDomicilio")
+	private Integer ID_DOMICILIO;
 
 	@JsonProperty(value = "curp")
 	private String CVE_CURP;
@@ -71,7 +74,7 @@ public class UsrContraResponse {
 	@JsonProperty(value = "numSexo")
 	private Integer NUM_SEXO;
 	
-	@JsonProperty(value = "otroSexo")
+	@JsonProperty(value = "desOtroSexo")
 	private String DES_OTRO_SEXO;
 	
 	@JsonProperty(value = "sexo")
