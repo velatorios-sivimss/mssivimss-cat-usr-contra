@@ -152,9 +152,9 @@ public class UsrContraImpl implements UsrContraService {
 		Response<?> response = providerRestTemplate.consumirServicio(usrContra.validacionActualizar(usrContraR.getNombre(), usrContraR.getPaterno(), usrContraR.getMaterno(), usrContraR.getRfc(), usrContraR.getIdPersona()).getDatos(), urlConsulta +DIAGONAL+ PATH_CONSULTA,
 				authentication);
 		Object rst=response.getDatos();
-		log.info("---> "+rst.toString());
 		if(rst.toString().equals("[{c=1}]")) {
-			response.setMensaje("56");
+			response.setError(true);
+			response.setMensaje("59");
 			response.setDatos(null);
 			logUtil.crearArchivoLog(Level.WARNING.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"REGISTRO DUPLICADO", CONSULTA, authentication, usuario);
 			return response;
@@ -198,17 +198,6 @@ public class UsrContraImpl implements UsrContraService {
 	return response;
 	}
 	
-	/*private boolean validarRegistro(String nombre, String paterno, String materno, String rfc, Integer idPersona, Authentication authentication) throws IOException {
-		Response<?> response= providerRestTemplate.consumirServicio(usrContra.validacionActualizar(nombre, paterno, materno, rfc, idPersona).getDatos(), urlConsulta + PATH_CONSULTA,
-				authentication);
-		if (response.getCodigo()==200){
-	Object rst=response.getDatos();
-	log.info("---> "+rst.toString());
-	return rst.toString().equals("[]");
-		}
-		 throw new BadRequestException(HttpStatus.BAD_REQUEST, "ERROR AL REGISTRAR EL CONTRATANTE");
-	}*/
-
 	@Override
 	public Response<?> descargarCatContratantes(DatosRequest request, Authentication authentication)
 			throws IOException {
