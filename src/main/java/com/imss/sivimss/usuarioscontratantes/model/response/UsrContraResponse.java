@@ -23,6 +23,9 @@ public class UsrContraResponse {
 	@JsonProperty(value = "idContratante")
 	private Integer ID_CONTRATANTE;
 	
+	@JsonProperty(value = "idpersona")
+	private Integer ID_PERSONA;
+	
 	@JsonProperty(value = "idDomicilio")
 	private Integer ID_DOMICILIO;
 
