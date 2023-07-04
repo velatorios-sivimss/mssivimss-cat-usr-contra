@@ -149,6 +149,7 @@ public class UsrContra {
 		String palabra = request.getDatos().get("palabra").toString();
 		SelectQueryUtil queryUtil = new SelectQueryUtil();
 		queryUtil.select("SC.ID_CONTRATANTE",
+				"SC.ID_PERSONA",
 				"SC.ID_DOMICILIO",
 				"SP.CVE_CURP",
 				"SP.CVE_NSS",
