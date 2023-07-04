@@ -23,7 +23,7 @@ public class UsrContraResponse {
 	@JsonProperty(value = "idContratante")
 	private Integer ID_CONTRATANTE;
 	
-	@JsonProperty(value = "idpersona")
+	@JsonProperty(value = "idPersona")
 	private Integer ID_PERSONA;
 	
 	@JsonProperty(value = "idDomicilio")
