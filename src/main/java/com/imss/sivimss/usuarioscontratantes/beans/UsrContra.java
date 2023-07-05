@@ -125,12 +125,13 @@ public class UsrContra {
 	    if (filtros.getNomContratante()!=null) {
 			where.append(" AND SP.NOM_PERSONA LIKE '%"+filtros.getNomContratante()+"%'");
 		} 
-	    if(filtros.getEstatus()!=null) {
-			where.append(" AND SC.IND_ACTIVO= "+filtros.getEstatus()+"");
-		}
-	    if(!Boolean.TRUE.equals(filtros.getEstatus())) {
-	    	where.append(" OR SC.IND_ACTIVO IS NULL");
+	    if(filtros.getEstatus()!=null && filtros.getEstatus()) {
+			where.append(" AND SC.IND_ACTIVO = TRUE");
+			}
+	    if(filtros.getEstatus()!=null && !filtros.getEstatus()) {
+	    	where.append(" AND (SC.IND_ACTIVO = FALSE OR SC.IND_ACTIVO IS NULL)");
 	    }
+	    
 	    if(where.toString().contains("AND")) {
 	    	queryUtil.where(where.toString().replaceFirst("AND", ""));
 	    }String query = obtieneQuery(queryUtil);
@@ -392,13 +393,14 @@ public class UsrContra {
 	    if (reporte.getNomContratante()!=null) {
 			condition.append(" AND SP.NOM_PERSONA LIKE '%"+reporte.getNomContratante()+"%'");
 		} 
-	    if(reporte.getEstatus()!=null) {
-			condition.append(" AND SC.IND_ACTIVO= "+reporte.getEstatus()+"");
-		}
-	    if((!Boolean.TRUE.equals(reporte.getEstatus()))) {
-	    	condition.append(" OR SC.IND_ACTIVO IS NULL");
+	    if(reporte.getEstatus()!=null && reporte.getEstatus()) {
+			condition.append(" AND SC.IND_ACTIVO = TRUE");
+			}
+	    if(reporte.getEstatus()!=null && !reporte.getEstatus()) {
+	    	condition.append(" AND (SC.IND_ACTIVO = FALSE OR SC.IND_ACTIVO IS NULL)");
 	    }
 	    condition.append(";");
+	    log.info("->" +condition.toString());
 		envioDatos.put("condition", condition.toString());		
 		envioDatos.put("rutaNombreReporte", reporte.getRutaNombreReporte());
 		envioDatos.put("tipoReporte", reporte.getTipoReporte());
