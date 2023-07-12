@@ -20,6 +20,7 @@ public class FiltrosUsrContraRequest {
 	private String nss;
 	private String nomContratante;
 	private Boolean estatus;
+	private Integer id;
 	private String tamanio;
 	private String pagina;
 	
