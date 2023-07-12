@@ -105,13 +105,13 @@ public class UsrContra {
 				"SC.ID_DOMICILIO AS idDomicilio",
 				"SC.ID_PERSONA AS idPersona",
 				"SP.CVE_CURP AS curp",
-				"SP.CVE_NSS AS nss",
+				"IF(SP.CVE_NSS='null', '', SP.CVE_NSS) AS nss",
 				"CONCAT(SP.NOM_PERSONA, ' ',"
 				+ "SP.NOM_PRIMER_APELLIDO, ' ',"
 				+ "SP.NOM_SEGUNDO_APELLIDO) AS nomContratante",
-				"SP.CVE_RFC AS rfc",
+				"IF(SP.CVE_RFC='null', '', SP.CVE_RFC) AS rfc",
 				"DATE_FORMAT(SP.FEC_NAC, '%d-%m-%Y') AS fecNacimiento",
-				"SP.DES_TELEFONO AS tel",
+				"IF(SP.DES_TELEFONO='null', '', SP.DES_TELEFONO) AS tel",
 				"SC.IND_ACTIVO AS estatus")
 		.from(SVC_CONTRATANTE)
 		.join(SVC_PERSONA, SC_ID_PERSONA_SP_ID_PERSONA);
@@ -153,17 +153,17 @@ public class UsrContra {
 				"SC.ID_PERSONA",
 				"SC.ID_DOMICILIO",
 				"SP.CVE_CURP",
-				"SP.CVE_NSS",
+				"IF(SP.CVE_NSS='null', '', SP.CVE_NSS) AS CVE_NSS",
 				"SP.NOM_PERSONA",
 				"SP.NOM_PRIMER_APELLIDO",
 			    "SP.NOM_SEGUNDO_APELLIDO",
-				"SP.CVE_RFC",
-				"SP.NUM_SEXO",
+				"IF(SP.CVE_RFC='null', '', SP.CVE_RFC) AS CVE_RFC",
+				"IF(SP.NUM_SEXO='null', '', SP.NUM_SEXO) AS NUM_SEXO",
 				"CASE "
 				+"WHEN SP.NUM_SEXO=1 THEN 'MUJER' "
 				+ "WHEN SP.NUM_SEXO=2 THEN 'HOMBRE' "
 				+ "ELSE NULL END AS SEXO",
-				"SP.DES_OTRO_SEXO",
+				"IF(SP.DES_OTRO_SEXO='null', '', SP.DES_OTRO_SEXO) AS DES_OTRO_SEXO",
 				"DATE_FORMAT(SP.FEC_NAC, '%d-%m-%Y')",
 				"SP.ID_PAIS",
 				"SPA.DES_PAIS",
@@ -173,11 +173,11 @@ public class UsrContra {
 				+ "AS NACIONALIDAD",
 				"SP.ID_ESTADO",
 				"SE.DES_ESTADO AS DES_LUGAR_NACIMIENTO",
-				"SP.DES_TELEFONO",
-				"SP.DES_CORREO",
-				"SD.DES_CALLE",
-				"SD.NUM_EXTERIOR",
-				"SD.NUM_INTERIOR",
+				"IF(SP.DES_TELEFONO='null', '', SP.DES_TELEFONO) AS DES_TELEFONO",
+				"IF(SP.DES_CORREO='null', '', SP.DES_CORREO) AS DES_CORREO",
+				"IF(SD.DES_CALLE='null', '', SD.DES_CALLE) AS DES_CALLE",
+				"IF(SD.NUM_EXTERIOR='null', '', SD.NUM_EXTERIOR) AS NUM_EXTERIOR",
+				"IF(SD.NUM_INTERIOR='null', '', SD.NUM_INTERIOR) AS NUM_INTERIOR",
 				"SD.DES_CP",
 				"IFNULL(SD.DES_COLONIA, CP.DES_COLONIA) AS DES_COLONIA",
 				"IFNULL(CP.DES_ESTADO, SD.DES_ESTADO) AS DES_ESTADO",
@@ -185,8 +185,8 @@ public class UsrContra {
 				"SC.IND_ACTIVO")
 		.from(SVC_CONTRATANTE)
 		.join(SVC_PERSONA, SC_ID_PERSONA_SP_ID_PERSONA)
-		.join("SVC_PAIS SPA", "SP.ID_PAIS = SPA.ID_PAIS")
-		.join("SVC_ESTADO SE", "SP.ID_ESTADO = SE.ID_ESTADO")
+		.leftJoin("SVC_PAIS SPA", "SP.ID_PAIS = SPA.ID_PAIS")
+		.leftJoin("SVC_ESTADO SE", "SP.ID_ESTADO = SE.ID_ESTADO")
 		.join("SVT_DOMICILIO SD", "SC.ID_DOMICILIO = SD.ID_DOMICILIO")
 		.leftJoin("SVC_CP CP", "SD.DES_CP = CP.CVE_CODIGO_POSTAL");
 		queryUtil.where("SC.ID_CONTRATANTE= :id")
