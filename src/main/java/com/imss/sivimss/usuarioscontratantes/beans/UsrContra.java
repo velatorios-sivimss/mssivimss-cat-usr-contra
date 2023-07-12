@@ -123,7 +123,9 @@ public class UsrContra {
 			where.append(" AND SP.CVE_NSS= '"+filtros.getNss()+"'");
 		}
 	    if (filtros.getNomContratante()!=null) {
-			where.append(" AND SP.NOM_PERSONA LIKE '%"+filtros.getNomContratante()+"%'");
+			where.append(" AND SP.NOM_PERSONA LIKE '%"+filtros.getNomContratante()+"%'"
+					+ " OR SP.NOM_PRIMER_APELLIDO LIKE '%"+filtros.getNomContratante()+"%'"
+					+ " OR SP.NOM_SEGUNDO_APELLIDO LIKE '%"+filtros.getNomContratante()+"%'");
 		} 
 	    if(filtros.getEstatus()!=null && filtros.getEstatus()) {
 			where.append(" AND SC.IND_ACTIVO = TRUE");
@@ -131,7 +133,9 @@ public class UsrContra {
 	    if(filtros.getEstatus()!=null && !filtros.getEstatus()) {
 	    	where.append(" AND (SC.IND_ACTIVO = FALSE OR SC.IND_ACTIVO IS NULL)");
 	    }
-	    
+	    if(filtros.getId()!=null) {
+	    	where.append(" AND SC.ID_CONTRATANTE = " +filtros.getId());
+	    }
 	    if(where.toString().contains("AND")) {
 	    	queryUtil.where(where.toString().replaceFirst("AND", ""));
 	    }String query = obtieneQuery(queryUtil);
