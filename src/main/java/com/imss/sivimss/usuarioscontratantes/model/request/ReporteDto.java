@@ -22,5 +22,6 @@ public class ReporteDto {
 	private Boolean estatus;
 	private String rutaNombreReporte;
 	private String tipoReporte;
+	private Integer id;
 
 }
