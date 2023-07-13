@@ -394,9 +394,9 @@ public class UsrContra {
 	    if(reporte.getNss()!=null) {
 			condition.append(" AND SP.CVE_NSS= '"+reporte.getNss()+"'");
 		}
-	    if (reporte.getNomContratante()!=null) {
-			condition.append(" AND SP.NOM_PERSONA LIKE '%"+reporte.getNomContratante()+"%'");
-		} 
+	    if(reporte.getId()!=null) {
+	    	condition.append(" AND SC.ID_CONTRATANTE= "+reporte.getId()+"");
+	    }
 	    if(reporte.getEstatus()!=null && reporte.getEstatus()) {
 			condition.append(" AND SC.IND_ACTIVO = TRUE");
 			}
