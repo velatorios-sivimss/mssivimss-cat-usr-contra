@@ -13,8 +13,6 @@ public interface UsrContraService {
 
 	Response<?> detalleContratante(DatosRequest request, Authentication authentication) throws IOException;
 
-	Response<?> altaContratante(DatosRequest request, Authentication authentication) throws IOException;
-
 	Response<?> modificarContratante(DatosRequest request, Authentication authentication) throws IOException;
 
 	Response<?> cambiarEstatusContratante(DatosRequest request, Authentication authentication) throws IOException;

@@ -114,32 +114,6 @@ public class UsrContraImpl implements UsrContraService {
 		return response;
 	}
 
-	@Override
-	public Response<?> altaContratante(DatosRequest request, Authentication authentication) throws IOException {
-		try {
-			String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
-		    UsrContraRequest contraRequest = gson.fromJson(datosJson, UsrContraRequest.class);	
-			UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
-		    usrContra = new UsrContra(contraRequest);
-			usrContra.setIdUsuario(usuarioDto.getIdUsuario());
-			Response<?>	 response = providerRestTemplate.consumirServicio(usrContra.insertarPersona().getDatos(), urlConsulta+DIAGONAL + PATH_CREAR_MULTIPLE,
-						authentication);
-		if(response.getCodigo()==200){
-			logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"Datos generales correctos", ALTA, authentication, usuario);
-			providerRestTemplate.consumirServicio(usrContra.insertarDomic().getDatos(), urlConsulta+DIAGONAL + PATH_CREAR_MULTIPLE,
-					authentication);
-		}
-		logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"Domicilio contratante correcto", ALTA, authentication, usuario);
-			return response;		
-			
-		}catch (Exception e) {
-			String consulta = usrContra.insertarPersona().getDatos().get(""+AppConstantes.QUERY+"").toString();
-			String encoded = new String(DatatypeConverter.parseBase64Binary(consulta));
-			log.error("Error al ejecutar la query " +encoded);
-			logUtil.crearArchivoLog(Level.WARNING.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"Error al ejecutar la query", CONSULTA, authentication, usuario);
-			throw new IOException("5", e.getCause());
-		} 
-	}
 	
 	@Override
 	public Response<?> modificarContratante(DatosRequest request, Authentication authentication) throws IOException {
