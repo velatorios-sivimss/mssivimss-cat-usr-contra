@@ -123,9 +123,9 @@ public class UsrContra {
 			where.append(" AND SP.CVE_NSS= '"+filtros.getNss()+"'");
 		}
 	    if (filtros.getNomContratante()!=null) {
-			where.append(" AND SP.NOM_PERSONA LIKE '%"+filtros.getNomContratante()+"%'"
-					+ " OR SP.NOM_PRIMER_APELLIDO LIKE '%"+filtros.getNomContratante()+"%'"
-					+ " OR SP.NOM_SEGUNDO_APELLIDO LIKE '%"+filtros.getNomContratante()+"%'");
+			where.append(" AND CONCAT(SP.NOM_PERSONA,' ', "
+					+ "SP.NOM_PRIMER_APELLIDO,' ', "
+					+ "SP.NOM_SEGUNDO_APELLIDO) LIKE '%"+filtros.getNomContratante()+"%'");
 		} 
 	    if(filtros.getEstatus()!=null && filtros.getEstatus()) {
 			where.append(" AND SC.IND_ACTIVO = TRUE");
@@ -205,7 +205,7 @@ public class UsrContra {
 	}
 
 
-	public DatosRequest insertarPersona() {
+/*	public DatosRequest insertarPersona() {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
 		final QueryHelper q = new QueryHelper("INSERT INTO SVC_PERSONA");
@@ -286,7 +286,7 @@ public class UsrContra {
 		        parametro.put(AppConstantes.QUERY, encoded);
 		        request.setDatos(parametro);
 		        return query;
-	}
+	} */
 
 
 	public DatosRequest editarPersona() {
@@ -297,10 +297,8 @@ public class UsrContra {
 		q.agregarParametroValues("NOM_PRIMER_APELLIDO", "'" + this.paterno + "'");
 		q.agregarParametroValues("NOM_SEGUNDO_APELLIDO", "'" + this.materno + "'");
 		q.agregarParametroValues("CVE_RFC", "'" +this.rfc +"'");
-		q.agregarParametroValues("NUM_SEXO", "" +this.numSexo +"");	
-		if(this.otroSexo!=null) {
-			q.agregarParametroValues("DES_OTRO_SEXO", "'" +this.otroSexo +"'");		
-		}
+		q.agregarParametroValues("NUM_SEXO", ""+this.numSexo +"");	
+		q.agregarParametroValues("DES_OTRO_SEXO", setValor(this.otroSexo));	
 		q.agregarParametroValues("FEC_NAC", "'"+fecNacimiento+"'");
 		q.agregarParametroValues("ID_PAIS", "" + this.idPais + "");
 		q.agregarParametroValues("ID_ESTADO", ""+ this.idlugarNac+ "");
@@ -326,11 +324,9 @@ public class UsrContra {
 		q.agregarParametroValues("NUM_EXTERIOR", "'" + this.numExte + "'");
 		q.agregarParametroValues("NUM_INTERIOR", "'" + this.numInt + "'");
 		q.agregarParametroValues("DES_CP", "" +this.cp +"");
-		q.agregarParametroValues("DES_COLONIA", "'"+this.desColonia + "'");
-		if(this.desEstado!=null || this.desMunicpio!=null) {
-			q.agregarParametroValues("DES_MUNICIPIO", "'"+this.desMunicpio+"'");
-			q.agregarParametroValues("DES_ESTADO", "'"+ this.desEstado +"'");
-		}
+		q.agregarParametroValues("DES_COLONIA", setValor(this.desColonia));
+		q.agregarParametroValues("DES_MUNICIPIO", setValor(this.desMunicpio));
+		q.agregarParametroValues("DES_ESTADO", setValor(this.desEstado));
 		q.agregarParametroValues(ID_USUARIO_MODIFICA, ""+idUsuario+"");
 		q.agregarParametroValues(FEC_ACTUALIZACION, ""+AppConstantes.CURRENT_TIMESTAMP+"");
 		q.addWhere("ID_DOMICILIO= " +this.idDomicilio);
@@ -487,6 +483,14 @@ public class UsrContra {
 	
 	private static String encodedQuery(String query) {
         return DatatypeConverter.printBase64Binary(query.getBytes(StandardCharsets.UTF_8));
+    }
+	
+	private String setValor(String valor) {
+        if (valor==null || valor.equals("")) {
+            return "NULL";
+        }else {
+            return "'"+valor+"'";
+        }
     }
 
 }
