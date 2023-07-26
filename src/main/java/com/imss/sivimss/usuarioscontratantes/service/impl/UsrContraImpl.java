@@ -137,10 +137,13 @@ public class UsrContraImpl implements UsrContraService {
 		try {
 		UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
 		usrContra = new UsrContra(usrContraR);
-		Date dateF = new SimpleDateFormat("dd-MM-yyyy").parse(usrContraR.getFecNacimiento());
-        DateFormat fechaFormat = new SimpleDateFormat("yyyy-MM-dd", new Locale("es", "MX"));
-        String fecha=fechaFormat.format(dateF);
-        usrContra.setFecNacimiento(fecha);
+		if(usrContraR.getFecNacimiento()!=null) {
+			Date dateF = new SimpleDateFormat("dd-MM-yyyy").parse(usrContraR.getFecNacimiento());
+	        DateFormat fechaFormat = new SimpleDateFormat("yyyy-MM-dd", new Locale("es", "MX"));
+	        String fecha=fechaFormat.format(dateF);
+	        usrContra.setFecNacimiento(fecha);
+		}
+		
 		usrContra.setIdUsuario(usuarioDto.getIdUsuario());
 		response = providerRestTemplate.consumirServicio(usrContra.editarPersona().getDatos(), urlConsulta+DIAGONAL + PATH_ACTUALIZAR,
 					authentication);

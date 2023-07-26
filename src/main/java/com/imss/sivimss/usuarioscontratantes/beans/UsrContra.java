@@ -173,6 +173,7 @@ public class UsrContra {
 				"SPA.DES_PAIS",
 				"CASE "
 				+ "WHEN SP.ID_PAIS=119 THEN 'Mexicana' "
+				+"WHEN SP.ID_PAIS IS NULL THEN '' "
 				+ "ELSE 'Extranjera' END "
 				+ "AS NACIONALIDAD",
 				"SP.ID_ESTADO",
@@ -299,7 +300,7 @@ public class UsrContra {
 		q.agregarParametroValues("CVE_RFC", "'" +this.rfc +"'");
 		q.agregarParametroValues("NUM_SEXO", ""+this.numSexo +"");	
 		q.agregarParametroValues("DES_OTRO_SEXO", setValor(this.otroSexo));	
-		q.agregarParametroValues("FEC_NAC", "'"+fecNacimiento+"'");
+		q.agregarParametroValues("FEC_NAC", setValor(fecNacimiento));
 		q.agregarParametroValues("ID_PAIS", "" + this.idPais + "");
 		q.agregarParametroValues("ID_ESTADO", ""+ this.idlugarNac+ "");
 		q.agregarParametroValues("DES_TELEFONO", "'" + this.tel + "'");
@@ -369,11 +370,16 @@ public class UsrContra {
 		.from(SVC_PERSONA)
 		.join("SVC_CONTRATANTE SV", "SP.ID_PERSONA = SV.ID_PERSONA");
 		queryUtil.where("SP.NOM_PERSONA= :nombre").and("SP.NOM_PRIMER_APELLIDO= :paterno")
-		.and("SP.NOM_SEGUNDO_APELLIDO= :materno").and("SP.CVE_RFC= :rfc").and("SP.ID_PERSONA != :id")
+		.and("SP.NOM_SEGUNDO_APELLIDO= :materno")
+		.and("SP.ID_PERSONA != :id")
 		.setParameter("nombre", nombre).setParameter("paterno", paterno).setParameter("materno", materno)
-		.setParameter("rfc", rfc).setParameter("id", idPersona);
+		.setParameter("id", idPersona);
+		if(rfc!=null) {
+			queryUtil.where("SP.CVE_RFC= :rfc")
+			.setParameter("rfc", rfc);
+		}
 		String query = obtieneQuery(queryUtil);
-		log.info("-> " +query);
+		log.info("-> validacion" +query);
 		String encoded = encodedQuery(query);
 			parametro.put(AppConstantes.QUERY, encoded);
 				request.setDatos(parametro);
