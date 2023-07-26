@@ -300,7 +300,7 @@ public class UsrContra {
 		q.agregarParametroValues("CVE_RFC", "'" +this.rfc +"'");
 		q.agregarParametroValues("NUM_SEXO", ""+this.numSexo +"");	
 		q.agregarParametroValues("DES_OTRO_SEXO", setValor(this.otroSexo));	
-		q.agregarParametroValues("FEC_NAC", "'"+fecNacimiento+"'");
+		q.agregarParametroValues("FEC_NAC", setValor(fecNacimiento));
 		q.agregarParametroValues("ID_PAIS", "" + this.idPais + "");
 		q.agregarParametroValues("ID_ESTADO", ""+ this.idlugarNac+ "");
 		q.agregarParametroValues("DES_TELEFONO", "'" + this.tel + "'");
