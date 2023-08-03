@@ -469,12 +469,15 @@ public class UsrContra {
 	public DatosRequest buscarContra(DatosRequest request, String nombre) {
 		 Map<String, Object> parametro = new HashMap<>();
 	        SelectQueryUtil queryUtil = new SelectQueryUtil();
-	        queryUtil.select("CONCAT(SP.NOM_PERSONA,' ', " 
+	        queryUtil.select("SC.ID_CONTRATANTE AS idContratante",
+	        		"CONCAT(SP.NOM_PERSONA,' ', " 
 	        		+"SP.NOM_PRIMER_APELLIDO, ' ', "
-	                        +"SP.NOM_SEGUNDO_APELLIDO) AS nombre")
+	                        +"SP.NOM_SEGUNDO_APELLIDO) AS nomContratante")
 	                .from(SVC_CONTRATANTE)
 	                .join(SVC_PERSONA, SC_ID_PERSONA_SP_ID_PERSONA);
-	        queryUtil.where("SP.NOM_PERSONA LIKE " +"'%"+nombre +"%'");
+	        queryUtil.where("CONCAT(SP.NOM_PERSONA,' ', "
+	        		+ "SP.NOM_PRIMER_APELLIDO,' ', "
+	        		+ "SP.NOM_SEGUNDO_APELLIDO) LIKE" +"'%"+nombre +"%' LIMIT 1");
 	        String query = obtieneQuery(queryUtil);
 	        String encoded = encodedQuery(query);
 	        parametro.put(AppConstantes.QUERY, encoded);
