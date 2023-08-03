@@ -42,8 +42,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class UsrContraImpl implements UsrContraService {
 
-	
-	private static final String ALTA = "alta";
 	private static final String BAJA = "baja";
 	private static final String MODIFICACION = "modificacion";
 	private static final String CONSULTA = "consulta";
