@@ -77,7 +77,7 @@ public class UsrContraResponse {
 	@JsonProperty(value = "numSexo")
 	private Integer NUM_SEXO;
 	
-	@JsonProperty(value = "desOtroSexo")
+	@JsonProperty(value = "otroSexo")
 	private String DES_OTRO_SEXO;
 	
 	@JsonProperty(value = "sexo")
