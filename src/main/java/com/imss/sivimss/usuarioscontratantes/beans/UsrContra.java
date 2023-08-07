@@ -393,7 +393,8 @@ public class UsrContra {
 	                .join(SVC_PERSONA, SC_ID_PERSONA_SP_ID_PERSONA);
 	        queryUtil.where("CONCAT(SP.NOM_PERSONA,' ', "
 	        		+ "SP.NOM_PRIMER_APELLIDO,' ', "
-	        		+ "SP.NOM_SEGUNDO_APELLIDO) LIKE" +"'%"+nombre +"%' LIMIT 1");
+	        		+ "SP.NOM_SEGUNDO_APELLIDO) LIKE" +"'%"+nombre +"%'");
+	        queryUtil.groupBy("SP.NOM_PERSONA, SP.NOM_PRIMER_APELLIDO , SP.NOM_SEGUNDO_APELLIDO");
 	        String query = obtieneQuery(queryUtil);
 	        String encoded = encodedQuery(query);
 	        parametro.put(AppConstantes.QUERY, encoded);
