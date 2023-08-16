@@ -45,6 +45,7 @@ public class UsrContra {
 	private Integer idPais;
 	private Integer idlugarNac;
 	private String tel;
+	private String segundoTel;
 	private String correo;
 	private String calle;
 	private String numExte;
@@ -81,6 +82,7 @@ public class UsrContra {
 		this.estatus = contraR.getEstatus();
 		this.idDomicilio = contraR.getIdDomicilio();
 		this.idPersona=contraR.getIdPersona();
+		this.segundoTel=contraR.getSegundoTel();
 	}
 
 	//Tablas
@@ -123,8 +125,8 @@ public class UsrContra {
 			where.append(" AND SP.CVE_NSS= '"+filtros.getNss()+"'");
 		}
 	    if (filtros.getNomContratante()!=null) {
-			where.append(" AND CONCAT(SP.NOM_PERSONA,' ', "
-					+ "SP.NOM_PRIMER_APELLIDO,' ', "
+			where.append(" AND CONCAT(SP.NOM_PERSONA,' ',"
+					+ " SP.NOM_PRIMER_APELLIDO,' ', "
 					+ "SP.NOM_SEGUNDO_APELLIDO) LIKE '%"+filtros.getNomContratante()+"%'");
 		} 
 	    if(filtros.getEstatus()!=null && filtros.getEstatus()) {
@@ -179,6 +181,7 @@ public class UsrContra {
 				"SP.ID_ESTADO",
 				"SE.DES_ESTADO AS DES_LUGAR_NACIMIENTO",
 				"IF(SP.DES_TELEFONO='null', '', SP.DES_TELEFONO) AS DES_TELEFONO",
+				"IF(SP.DES_TELEFONO_FIJO='', NULL, SP.DES_TELEFONO_FIJO) AS DES_SEGUNDO_TELEFONO",
 				"IF(SP.DES_CORREO='null', '', SP.DES_CORREO) AS DES_CORREO",
 				"IF(SD.DES_CALLE='null', '', SD.DES_CALLE) AS DES_CALLE",
 				"IF(SD.NUM_EXTERIOR='null', '', SD.NUM_EXTERIOR) AS NUM_EXTERIOR",
@@ -213,13 +216,18 @@ public class UsrContra {
 		q.agregarParametroValues("NOM_PERSONA", "'" + this.nombre + "'");
 		q.agregarParametroValues("NOM_PRIMER_APELLIDO", "'" + this.paterno + "'");
 		q.agregarParametroValues("NOM_SEGUNDO_APELLIDO", "'" + this.materno + "'");
-		q.agregarParametroValues("CVE_RFC", "'" +this.rfc +"'");
+		q.agregarParametroValues("CVE_RFC", setValor(this.rfc));
 		q.agregarParametroValues("NUM_SEXO", ""+this.numSexo +"");	
 		q.agregarParametroValues("DES_OTRO_SEXO", setValor(this.otroSexo));	
 		q.agregarParametroValues("FEC_NAC", setValor(fecNacimiento));
 		q.agregarParametroValues("ID_PAIS", "" + this.idPais + "");
 		q.agregarParametroValues("ID_ESTADO", ""+ this.idlugarNac+ "");
 		q.agregarParametroValues("DES_TELEFONO", "'" + this.tel + "'");
+		if(this.segundoTel!=null) {
+			q.agregarParametroValues("DES_TELEFONO_FIJO", "'" +this.segundoTel+ "'");
+		}else {
+			q.agregarParametroValues("DES_TELEFONO_FIJO", "''");
+		}
 		q.agregarParametroValues("DES_CORREO", "'"+ this.correo +"'");
 		q.agregarParametroValues(ID_USUARIO_MODIFICA, ""+idUsuario+"");
 		q.agregarParametroValues(FEC_ACTUALIZACION, ""+AppConstantes.CURRENT_TIMESTAMP+"");
@@ -238,8 +246,8 @@ public class UsrContra {
 		Map<String, Object> parametro = new HashMap<>();
 		final QueryHelper q = new QueryHelper("UPDATE SVT_DOMICILIO");
 		q.agregarParametroValues("DES_CALLE", "'" + this.calle+ "'");
-		q.agregarParametroValues("NUM_EXTERIOR", "'" + this.numExte + "'");
-		q.agregarParametroValues("NUM_INTERIOR", "'" + this.numInt + "'");
+		q.agregarParametroValues("NUM_EXTERIOR", setValor(this.numExte));
+		q.agregarParametroValues("NUM_INTERIOR", setValor(this.numInt ));
 		q.agregarParametroValues("DES_CP", "" +this.cp +"");
 		q.agregarParametroValues("DES_COLONIA", setValor(this.desColonia));
 		q.agregarParametroValues("DES_MUNICIPIO", setValor(this.desMunicpio));

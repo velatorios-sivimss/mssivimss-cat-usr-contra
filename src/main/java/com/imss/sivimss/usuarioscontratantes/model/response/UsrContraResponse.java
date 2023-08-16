@@ -35,6 +35,9 @@ public class UsrContraResponse {
 	@JsonProperty(value = "telefono")
 	private String DES_TELEFONO;
 	
+	@JsonProperty(value = "segundoTel")
+	private String DES_SEGUNDO_TELEFONO;
+	
 	@JsonProperty(value = "correo")
 	private String DES_CORREO;
 	

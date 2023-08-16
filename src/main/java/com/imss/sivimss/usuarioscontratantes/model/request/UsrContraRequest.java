@@ -29,6 +29,7 @@ public class UsrContraRequest {
 	private Integer idPais;
 	private Integer idLugarNac;
 	private String tel;
+	private String segundoTel;
 	private String correo;
 	private String calle;
 	private String numInt;
