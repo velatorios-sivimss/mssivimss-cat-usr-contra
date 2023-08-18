@@ -222,7 +222,7 @@ public class UsrContra {
 		q.agregarParametroValues("FEC_NAC", setValor(fecNacimiento));
 		q.agregarParametroValues("ID_PAIS", "" + this.idPais + "");
 		q.agregarParametroValues("ID_ESTADO", ""+ this.idlugarNac+ "");
-		q.agregarParametroValues("DES_TELEFONO", "'" + this.tel + "'");
+		q.agregarParametroValues("DES_TELEFONO", setValor(this.tel));
 		if(this.segundoTel!=null) {
 			q.agregarParametroValues("DES_TELEFONO_FIJO", "'" +this.segundoTel+ "'");
 		}else {
