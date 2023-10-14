@@ -228,9 +228,9 @@ public class UsrContra {
 		}else {
 			q.agregarParametroValues("DES_TELEFONO_FIJO", "''");
 		}
-		q.agregarParametroValues("DES_CORREO", "'"+ this.correo +"'");
-		q.agregarParametroValues(ID_USUARIO_MODIFICA, ""+idUsuario+"");
-		q.agregarParametroValues(FEC_ACTUALIZACION, ""+AppConstantes.CURRENT_TIMESTAMP+"");
+		q.agregarParametroValues("DES_CORREO", setValor(this.correo));
+		q.agregarParametroValues(ID_USUARIO_MODIFICA, idUsuario.toString());
+		q.agregarParametroValues(FEC_ACTUALIZACION, AppConstantes.CURRENT_TIMESTAMP);
 		q.addWhere("ID_PERSONA= " +this.idPersona);
 		String query = q.obtenerQueryActualizar();
 		log.info(query);
@@ -245,15 +245,15 @@ public class UsrContra {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
 		final QueryHelper q = new QueryHelper("UPDATE SVT_DOMICILIO");
-		q.agregarParametroValues("DES_CALLE", "'" + this.calle+ "'");
+		q.agregarParametroValues("DES_CALLE", setValor(this.calle));
 		q.agregarParametroValues("NUM_EXTERIOR", setValor(this.numExte));
 		q.agregarParametroValues("NUM_INTERIOR", setValor(this.numInt ));
 		q.agregarParametroValues("DES_CP", "" +this.cp +"");
 		q.agregarParametroValues("DES_COLONIA", setValor(this.desColonia));
 		q.agregarParametroValues("DES_MUNICIPIO", setValor(this.desMunicpio));
 		q.agregarParametroValues("DES_ESTADO", setValor(this.desEstado));
-		q.agregarParametroValues(ID_USUARIO_MODIFICA, ""+idUsuario+"");
-		q.agregarParametroValues(FEC_ACTUALIZACION, ""+AppConstantes.CURRENT_TIMESTAMP+"");
+		q.agregarParametroValues(ID_USUARIO_MODIFICA, idUsuario.toString());
+		q.agregarParametroValues(FEC_ACTUALIZACION, AppConstantes.CURRENT_TIMESTAMP);
 		q.addWhere("ID_DOMICILIO= " +this.idDomicilio);
 		String query =q.obtenerQueryActualizar();
 		log.info(query);
