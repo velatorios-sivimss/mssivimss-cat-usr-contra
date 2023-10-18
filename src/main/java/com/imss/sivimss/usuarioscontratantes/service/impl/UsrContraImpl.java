@@ -33,6 +33,7 @@ import com.imss.sivimss.usuarioscontratantes.util.AppConstantes;
 import com.imss.sivimss.usuarioscontratantes.util.ConvertirGenerico;
 import com.imss.sivimss.usuarioscontratantes.util.DatosRequest;
 import com.imss.sivimss.usuarioscontratantes.util.LogUtil;
+import com.imss.sivimss.usuarioscontratantes.util.MensajeResponseUtil;
 import com.imss.sivimss.usuarioscontratantes.util.ProviderServiceRestTemplate;
 import com.imss.sivimss.usuarioscontratantes.util.Response;
 
@@ -47,6 +48,7 @@ public class UsrContraImpl implements UsrContraService {
 	private static final String CONSULTA = "consulta";
 	private static final String IMPRIMIR = "imprimir";
 	private static final String INFORMACION_INCOMPLETA = "Informacion incompleta";
+	private static final String ERROR_DESCARGA= "64";
 	
 	 private static final String DIAGONAL="/";
 	 private static final String PATH_PAGINADO="paginado";
@@ -78,14 +80,14 @@ public class UsrContraImpl implements UsrContraService {
 	UsuarioDto usuario;
 	
 	@Override
-	public Response<?> buscarContratantes(DatosRequest request, Authentication authentication) throws IOException {
+	public Response<Object> buscarContratantes(DatosRequest request, Authentication authentication) throws IOException {
 		String datosJson = String.valueOf(request.getDatos().get("datos"));
 		FiltrosUsrContraRequest filtros = gson.fromJson(datosJson, FiltrosUsrContraRequest.class);
 		 Integer pagina = Integer.valueOf(Integer.parseInt(request.getDatos().get("pagina").toString()));
 	        Integer tamanio = Integer.valueOf(Integer.parseInt(request.getDatos().get("tamanio").toString()));
 	        filtros.setTamanio(tamanio.toString());
 	        filtros.setPagina(pagina.toString());
-		Response<?> response = providerRestTemplate.consumirServicio(usrContra.buscarContratantes(request, filtros).getDatos(), urlConsulta+DIAGONAL+PATH_PAGINADO,
+		Response<Object> response = providerRestTemplate.consumirServicio(usrContra.buscarContratantes(request, filtros).getDatos(), urlConsulta+DIAGONAL+PATH_PAGINADO,
 					authentication);
 		if(response.getDatos().toString().contains("id")){
 			logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"CONSULTA CONTRATANTES OK", CONSULTA, authentication, usuario);
@@ -100,9 +102,9 @@ public class UsrContraImpl implements UsrContraService {
 	}
 
 	@Override
-	public Response<?> detalleContratante(DatosRequest request, Authentication authentication) throws IOException { 
+	public Response<Object> detalleContratante(DatosRequest request, Authentication authentication) throws IOException { 
 		List<UsrContraResponse> usrResponse;
-		Response<?> response = providerRestTemplate.consumirServicio(usrContra.verDetalle(request).getDatos(), urlConsulta+DIAGONAL + PATH_CONSULTA,
+		Response<Object> response = providerRestTemplate.consumirServicio(usrContra.verDetalle(request).getDatos(), urlConsulta+DIAGONAL + PATH_CONSULTA,
 				authentication);
 		if (response.getCodigo() == 200) {
 			usrResponse = Arrays.asList(modelMapper.map(response.getDatos(), UsrContraResponse[].class));
@@ -114,14 +116,14 @@ public class UsrContraImpl implements UsrContraService {
 
 	
 	@Override
-	public Response<?> modificarContratante(DatosRequest request, Authentication authentication) throws IOException {
+	public Response<Object> modificarContratante(DatosRequest request, Authentication authentication) throws IOException {
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		UsrContraRequest usrContraR = gson.fromJson(datosJson, UsrContraRequest.class);	
 		if(usrContraR.getIdPersona()==null || usrContraR.getIdDomicilio()==null){
 			logUtil.crearArchivoLog(Level.WARNING.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),INFORMACION_INCOMPLETA, MODIFICACION, authentication, usuario);
 			throw new BadRequestException(HttpStatus.BAD_REQUEST, INFORMACION_INCOMPLETA);
 		} 
-		Response<?> response = providerRestTemplate.consumirServicio(usrContra.validacionActualizar(usrContraR.getNombre(), usrContraR.getPaterno(), usrContraR.getMaterno(), usrContraR.getRfc(), usrContraR.getIdPersona()).getDatos(), urlConsulta +DIAGONAL+ PATH_CONSULTA,
+		Response<Object> response = providerRestTemplate.consumirServicio(usrContra.validacionActualizar(usrContraR.getNombre(), usrContraR.getPaterno(), usrContraR.getMaterno(), usrContraR.getRfc(), usrContraR.getIdPersona()).getDatos(), urlConsulta +DIAGONAL+ PATH_CONSULTA,
 				authentication);
 		Object rst=response.getDatos();
 		if(rst.toString().equals("[{c=1}]")) {
@@ -162,7 +164,7 @@ public class UsrContraImpl implements UsrContraService {
 		}
 
 	@Override
-	public Response<?> cambiarEstatusContratante(DatosRequest request, Authentication authentication) throws IOException {
+	public Response<Object> cambiarEstatusContratante(DatosRequest request, Authentication authentication) throws IOException {
 		UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
 		usrContra.setIdUsuario(usuarioDto.getIdUsuario());
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
@@ -170,28 +172,28 @@ public class UsrContraImpl implements UsrContraService {
         if(usrContraR.getIdContratante()==null || usrContraR.getEstatus()==null) {
         	 throw new BadRequestException(HttpStatus.BAD_REQUEST, INFORMACION_INCOMPLETA);
 		}
-		Response<?> response = providerRestTemplate.consumirServicio(usrContra.cambiarEstatus(usrContraR.getEstatus(), usrContraR.getIdContratante()).getDatos(), urlConsulta+DIAGONAL +PATH_ACTUALIZAR,
+		Response<Object> response = providerRestTemplate.consumirServicio(usrContra.cambiarEstatus(usrContraR.getEstatus(), usrContraR.getIdContratante()).getDatos(), urlConsulta+DIAGONAL +PATH_ACTUALIZAR,
 				authentication);
 		logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"Todo correcto", BAJA, authentication, usuario);
 	return response;
 	}
 	
 	@Override
-	public Response<?> descargarCatContratantes(DatosRequest request, Authentication authentication)
+	public Response<Object> descargarCatContratantes(DatosRequest request, Authentication authentication)
 			throws IOException {
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		ReporteDto reporte= gson.fromJson(datosJson, ReporteDto.class);
 		Map<String, Object> envioDatos = new UsrContra().reporteCatUsrContra(reporte);
-		Response<?> response = providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes,
+		Response<Object> response = providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes,
 				authentication);
 		logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"SE GENERO CORRECRAMENTE EL REPORTE DE USUARIOS CONTRATANTES", IMPRIMIR, authentication, usuario);
-		return response;
+		return MensajeResponseUtil.mensajeConsultaResponse(response, ERROR_DESCARGA);
 	}
 
 	
 	@Override
-	public Response<?> buscarCatalogos(DatosRequest request, Authentication authentication) throws IOException {
-		Response<?> response = null;
+	public Response<Object> buscarCatalogos(DatosRequest request, Authentication authentication) throws IOException {
+		Response<Object> response = null;
 		String datosJson = String.valueOf(request.getDatos().get("datos"));
 		CatalogoRequest catalogo = gson.fromJson(datosJson, CatalogoRequest.class);	
 		if(catalogo.getIdCatalogo()==null && catalogo.getNombre()!=null) {
