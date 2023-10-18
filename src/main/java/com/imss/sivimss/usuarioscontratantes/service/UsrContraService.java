@@ -9,16 +9,16 @@ import com.imss.sivimss.usuarioscontratantes.util.Response;
 
 public interface UsrContraService {
 
-	Response<?> buscarContratantes(DatosRequest request, Authentication authentication) throws IOException;
+	Response<Object> buscarContratantes(DatosRequest request, Authentication authentication) throws IOException;
 
-	Response<?> detalleContratante(DatosRequest request, Authentication authentication) throws IOException;
+	Response<Object> detalleContratante(DatosRequest request, Authentication authentication) throws IOException;
 
-	Response<?> modificarContratante(DatosRequest request, Authentication authentication) throws IOException;
+	Response<Object> modificarContratante(DatosRequest request, Authentication authentication) throws IOException;
 
-	Response<?> cambiarEstatusContratante(DatosRequest request, Authentication authentication) throws IOException;
+	Response<Object> cambiarEstatusContratante(DatosRequest request, Authentication authentication) throws IOException;
 
-	Response<?> descargarCatContratantes(DatosRequest request, Authentication authentication)throws IOException;
+	Response<Object> descargarCatContratantes(DatosRequest request, Authentication authentication)throws IOException;
 
-	Response<?> buscarCatalogos(DatosRequest request, Authentication authentication) throws IOException;
+	Response<Object> buscarCatalogos(DatosRequest request, Authentication authentication) throws IOException;
 
 }

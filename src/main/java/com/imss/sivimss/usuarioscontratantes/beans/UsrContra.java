@@ -113,7 +113,7 @@ public class UsrContra {
 				+ "SP.NOM_SEGUNDO_APELLIDO) AS nomContratante",
 				"IF(SP.CVE_RFC='null', '', SP.CVE_RFC) AS rfc",
 				"DATE_FORMAT(SP.FEC_NAC, '%d-%m-%Y') AS fecNacimiento",
-				"IF(SP.DES_TELEFONO='null', '', SP.DES_TELEFONO) AS tel",
+				"IF(SP.REF_TELEFONO='null', '', SP.REF_TELEFONO) AS tel",
 				"SC.IND_ACTIVO AS estatus")
 		.from(SVC_CONTRATANTE)
 		.join(SVC_PERSONA, SC_ID_PERSONA_SP_ID_PERSONA);
@@ -155,51 +155,50 @@ public class UsrContra {
 		Map<String, Object> parametros = new HashMap<>();
 		String palabra = request.getDatos().get("palabra").toString();
 		SelectQueryUtil queryUtil = new SelectQueryUtil();
-		queryUtil.select("SC.ID_CONTRATANTE",
-				"SC.ID_PERSONA",
-				"SC.ID_DOMICILIO",
-				"SP.CVE_CURP",
-				"IF(SP.CVE_NSS='null', '', SP.CVE_NSS) AS CVE_NSS",
-				"SP.NOM_PERSONA",
-				"SP.NOM_PRIMER_APELLIDO",
-			    "SP.NOM_SEGUNDO_APELLIDO",
-				"IF(SP.CVE_RFC='null', '', SP.CVE_RFC) AS CVE_RFC",
-				"IF(SP.NUM_SEXO='null', '', SP.NUM_SEXO) AS NUM_SEXO",
+		queryUtil.select("SC.ID_CONTRATANTE idContratante",
+				"SC.ID_PERSONA idPersona",
+				"SC.ID_DOMICILIO idDomicilio",
+				"SP.CVE_CURP curp",
+				"IF(SP.CVE_NSS='null', '', SP.CVE_NSS) nss",
+				"SP.NOM_PERSONA nombre",
+				"SP.NOM_PRIMER_APELLIDO paterno",
+			    "SP.NOM_SEGUNDO_APELLIDO materno",
+				"IF(SP.CVE_RFC='null', '', SP.CVE_RFC) rfc",
+				"IF(SP.NUM_SEXO='null', '', SP.NUM_SEXO) numSexo",
 				"CASE "
 				+"WHEN SP.NUM_SEXO=1 THEN 'MUJER' "
 				+ "WHEN SP.NUM_SEXO=2 THEN 'HOMBRE' "
-				+ "ELSE NULL END AS SEXO",
-				"IF(SP.DES_OTRO_SEXO='null', '', SP.DES_OTRO_SEXO) AS DES_OTRO_SEXO",
-				"DATE_FORMAT(SP.FEC_NAC, '%d-%m-%Y')",
-				"SP.ID_PAIS",
-				"SPA.DES_PAIS",
+				+ "ELSE NULL END sexo",
+				"IF(SP.REF_OTRO_SEXO='null', '', SP.REF_OTRO_SEXO) otroSexo",
+				"DATE_FORMAT(SP.FEC_NAC, '%d-%m-%Y') fecNacimiento",
+				"SP.ID_PAIS idPais",
+				"SPA.DES_PAIS pais",
 				"CASE "
 				+ "WHEN SP.ID_PAIS=119 THEN 'Mexicana' "
 				+"WHEN SP.ID_PAIS IS NULL THEN '' "
 				+ "ELSE 'Extranjera' END "
-				+ "AS NACIONALIDAD",
-				"SP.ID_ESTADO",
-				"SE.DES_ESTADO AS DES_LUGAR_NACIMIENTO",
-				"IF(SP.DES_TELEFONO='null', '', SP.DES_TELEFONO) AS DES_TELEFONO",
-				"IF(SP.DES_TELEFONO_FIJO='', NULL, SP.DES_TELEFONO_FIJO) AS DES_SEGUNDO_TELEFONO",
-				"IF(SP.DES_CORREO='null', '', SP.DES_CORREO) AS DES_CORREO",
-				"IF(SD.DES_CALLE='null', '', SD.DES_CALLE) AS DES_CALLE",
-				"IF(SD.NUM_EXTERIOR='null', '', SD.NUM_EXTERIOR) AS NUM_EXTERIOR",
-				"IF(SD.NUM_INTERIOR='null', '', SD.NUM_INTERIOR) AS NUM_INTERIOR",
-				"SD.DES_CP",
-				"IFNULL(SD.DES_COLONIA, CP.DES_COLONIA) AS DES_COLONIA",
-				"IFNULL(CP.DES_ESTADO, SD.DES_ESTADO) AS DES_ESTADO",
-				"IFNULL(CP.DES_MNPIO, SD.DES_MUNICIPIO) AS DES_MUNPIO",
-				"SC.IND_ACTIVO")
+				+ "nacionalidad",
+				"SP.ID_ESTADO idEstado",
+				"SE.DES_ESTADO lugarNacimiento",
+				"IF(SP.REF_TELEFONO='null', '', SP.REF_TELEFONO) telefono",
+				"IF(SP.REF_TELEFONO_FIJO='', NULL, SP.REF_TELEFONO_FIJO) segundoTel",
+				"IF(SP.REF_CORREO='null', '', SP.REF_CORREO) correo",
+				"IF(SD.REF_CALLE='null', '', SD.REF_CALLE) calle",
+				"IF(SD.NUM_EXTERIOR='null', '', SD.NUM_EXTERIOR) numExt",
+				"IF(SD.NUM_INTERIOR='null', '', SD.NUM_INTERIOR) numInt",
+				"SD.REF_CP cp",
+				"IFNULL(SD.REF_COLONIA, CP.DES_COLONIA) colonia",
+				"IFNULL(CP.DES_ESTADO, SD.REF_ESTADO) estado",
+				"IFNULL(CP.DES_MNPIO, SD.REF_MUNICIPIO) municipio",
+				"SC.IND_ACTIVO estatus")
 		.from(SVC_CONTRATANTE)
 		.join(SVC_PERSONA, SC_ID_PERSONA_SP_ID_PERSONA)
 		.leftJoin("SVC_PAIS SPA", "SP.ID_PAIS = SPA.ID_PAIS")
 		.leftJoin("SVC_ESTADO SE", "SP.ID_ESTADO = SE.ID_ESTADO")
 		.join("SVT_DOMICILIO SD", "SC.ID_DOMICILIO = SD.ID_DOMICILIO")
-		.leftJoin("SVC_CP CP", "SD.DES_CP = CP.CVE_CODIGO_POSTAL");
-		queryUtil.where("SC.ID_CONTRATANTE= :id")
-		.setParameter("id", Integer.parseInt(palabra));
-		queryUtil.groupBy("SD.DES_CP");
+		.leftJoin("SVC_CP CP", "SD.REF_CP = CP.CVE_CODIGO_POSTAL");
+		queryUtil.where("SC.ID_CONTRATANTE= "+palabra);
+		queryUtil.groupBy("SD.REF_CP");
 		String query = obtieneQuery(queryUtil);
 		log.info("-> " +query);
 		String encoded = encodedQuery(query);
@@ -217,18 +216,18 @@ public class UsrContra {
 		q.agregarParametroValues("NOM_PRIMER_APELLIDO", "'" + this.paterno + "'");
 		q.agregarParametroValues("NOM_SEGUNDO_APELLIDO", "'" + this.materno + "'");
 		q.agregarParametroValues("CVE_RFC", setValor(this.rfc));
-		q.agregarParametroValues("NUM_SEXO", ""+this.numSexo +"");	
-		q.agregarParametroValues("DES_OTRO_SEXO", setValor(this.otroSexo));	
+		q.agregarParametroValues("NUM_SEXO", this.numSexo.toString());	
+		q.agregarParametroValues("REF_OTRO_SEXO", setValor(this.otroSexo));	
 		q.agregarParametroValues("FEC_NAC", setValor(fecNacimiento));
-		q.agregarParametroValues("ID_PAIS", "" + this.idPais + "");
-		q.agregarParametroValues("ID_ESTADO", ""+ this.idlugarNac+ "");
-		q.agregarParametroValues("DES_TELEFONO", setValor(this.tel));
+		q.agregarParametroValues("ID_PAIS", this.idPais.toString() );
+		q.agregarParametroValues("ID_ESTADO", this.idlugarNac.toString());
+		q.agregarParametroValues("REF_TELEFONO", setValor(this.tel));
 		if(this.segundoTel!=null) {
-			q.agregarParametroValues("DES_TELEFONO_FIJO", "'" +this.segundoTel+ "'");
+			q.agregarParametroValues("REF_TELEFONO_FIJO", "'" +this.segundoTel+ "'");
 		}else {
-			q.agregarParametroValues("DES_TELEFONO_FIJO", "''");
+			q.agregarParametroValues("REF_TELEFONO_FIJO", "''");
 		}
-		q.agregarParametroValues("DES_CORREO", setValor(this.correo));
+		q.agregarParametroValues("REF_CORREO", setValor(this.correo));
 		q.agregarParametroValues(ID_USUARIO_MODIFICA, idUsuario.toString());
 		q.agregarParametroValues(FEC_ACTUALIZACION, AppConstantes.CURRENT_TIMESTAMP);
 		q.addWhere("ID_PERSONA= " +this.idPersona);
@@ -245,13 +244,13 @@ public class UsrContra {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
 		final QueryHelper q = new QueryHelper("UPDATE SVT_DOMICILIO");
-		q.agregarParametroValues("DES_CALLE", setValor(this.calle));
+		q.agregarParametroValues("REF_CALLE", setValor(this.calle));
 		q.agregarParametroValues("NUM_EXTERIOR", setValor(this.numExte));
 		q.agregarParametroValues("NUM_INTERIOR", setValor(this.numInt ));
-		q.agregarParametroValues("DES_CP", "" +this.cp +"");
-		q.agregarParametroValues("DES_COLONIA", setValor(this.desColonia));
-		q.agregarParametroValues("DES_MUNICIPIO", setValor(this.desMunicpio));
-		q.agregarParametroValues("DES_ESTADO", setValor(this.desEstado));
+		q.agregarParametroValues("REF_CP", this.cp.toString());
+		q.agregarParametroValues("REF_COLONIA", setValor(this.desColonia));
+		q.agregarParametroValues("REF_MUNICIPIO", setValor(this.desMunicpio));
+		q.agregarParametroValues("REF_ESTADO", setValor(this.desEstado));
 		q.agregarParametroValues(ID_USUARIO_MODIFICA, idUsuario.toString());
 		q.agregarParametroValues(FEC_ACTUALIZACION, AppConstantes.CURRENT_TIMESTAMP);
 		q.addWhere("ID_DOMICILIO= " +this.idDomicilio);
@@ -270,11 +269,11 @@ public class UsrContra {
         final QueryHelper q = new QueryHelper("UPDATE SVC_CONTRATANTE");
         q.agregarParametroValues(IND_ACTIVO, ""+estatus+"");
         if(Boolean.FALSE.equals(estatus)) {
-        	 q.agregarParametroValues("ID_USUARIO_BAJA", ""+idUsuario+"" );
- 			q.agregarParametroValues("FEC_BAJA", ""+AppConstantes.CURRENT_TIMESTAMP+"");
+        	 q.agregarParametroValues("ID_USUARIO_BAJA", idUsuario.toString() );
+ 			q.agregarParametroValues("FEC_BAJA", AppConstantes.CURRENT_TIMESTAMP);
         }else {
-        	  q.agregarParametroValues(ID_USUARIO_MODIFICA, ""+idUsuario+"" );
-  			q.agregarParametroValues(FEC_ACTUALIZACION, ""+AppConstantes.CURRENT_TIMESTAMP+"");
+        	  q.agregarParametroValues(ID_USUARIO_MODIFICA, idUsuario.toString() );
+  			q.agregarParametroValues(FEC_ACTUALIZACION, AppConstantes.CURRENT_TIMESTAMP);
         }
 		q.addWhere("ID_CONTRATANTE =" + idContratante);
         String query = q.obtenerQueryActualizar();
@@ -326,7 +325,7 @@ public class UsrContra {
 					+ "SP.NOM_SEGUNDO_APELLIDO) LIKE '%"+reporte.getNomContratante()+"%'");
 		} 
 	    if(reporte.getId()!=null) {
-	    	condition.append(" AND SC.ID_CONTRATANTE= "+reporte.getId()+"");
+	    	condition.append(" AND SC.ID_CONTRATANTE= "+reporte.getId());
 	    }
 	    if(reporte.getEstatus()!=null && reporte.getEstatus()) {
 			condition.append(" AND SC.IND_ACTIVO = TRUE");

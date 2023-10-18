@@ -30,7 +30,6 @@ import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 @RequestMapping("/")
 public class UsrContraController {
 	
-	private static final String ALTA = "alta";
 	private static final String IMPRIMIR = "imprimir";
 	private static final String MODIFICACION = "modificacion";
 	private static final String CONSULTA = "consulta";
@@ -51,9 +50,9 @@ public class UsrContraController {
 	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@TimeLimiter(name = "msflujo")
 	@PostMapping("buscar/usuarios-contratantes")
-	public CompletableFuture<?> buscarUsuariosContratantes(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	public CompletableFuture<Object> buscarUsuariosContratantes(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 		logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"Catalogo Usuarios Contratantes", CONSULTA, authentication, usuario);
-		Response<?> response = usrContra.buscarContratantes(request,authentication); 
+		Response<Object> response = usrContra.buscarContratantes(request,authentication); 
 		return CompletableFuture
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
@@ -62,9 +61,9 @@ public class UsrContraController {
 	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@TimeLimiter(name = "msflujo")
 	@PostMapping("buscar/detalle-contratante")
-	public CompletableFuture<?> detalleUsuarioContratante(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	public CompletableFuture<Object> detalleUsuarioContratante(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 		logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"Detalle usuario contratante", CONSULTA, authentication, usuario);
-		Response<?> response = usrContra.detalleContratante(request,authentication); 
+		Response<Object> response = usrContra.detalleContratante(request,authentication); 
 		return CompletableFuture
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
@@ -73,9 +72,9 @@ public class UsrContraController {
 	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@TimeLimiter(name = "msflujo")
 	@PostMapping("buscar/catalogos")
-	public CompletableFuture<?> buscarCatalogos(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	public CompletableFuture<Object> buscarCatalogos(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 		logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"Buscar Catalogos", CONSULTA, authentication, usuario);
-		Response<?> response = usrContra.buscarCatalogos(request,authentication); 
+		Response<Object> response = usrContra.buscarCatalogos(request,authentication); 
 		return CompletableFuture
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
@@ -85,9 +84,9 @@ public class UsrContraController {
 	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@TimeLimiter(name = "msflujo")
 	@PostMapping("modificar-contratante")
-	public CompletableFuture<?> modificarUsuarioContratante(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	public CompletableFuture<Object> modificarUsuarioContratante(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 		logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"actualizar beneficiarios", MODIFICACION, authentication, usuario);
-		Response<?> response = usrContra.modificarContratante(request,authentication); 
+		Response<Object> response = usrContra.modificarContratante(request,authentication); 
 		return CompletableFuture
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
@@ -96,9 +95,9 @@ public class UsrContraController {
 	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@TimeLimiter(name = "msflujo")
 	@PostMapping("cambiar-estatus")
-	public CompletableFuture<?> cambiarEstatusUsuarioContratante(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	public CompletableFuture<Object> cambiarEstatusUsuarioContratante(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 		logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"actualizar beneficiarios", MODIFICACION, authentication, usuario);
-		Response<?> response = usrContra.cambiarEstatusContratante(request,authentication); 
+		Response<Object> response = usrContra.cambiarEstatusContratante(request,authentication); 
 		return CompletableFuture
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
@@ -107,9 +106,9 @@ public class UsrContraController {
 	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@TimeLimiter(name = "msflujo")
 	@PostMapping("/descargar/catalogo-contratantes")
-	public CompletableFuture<?> descargarCatalogoUstContratantes(@RequestBody DatosRequest request,Authentication authentication) throws IOException{
+	public CompletableFuture<Object> descargarCatalogoUstContratantes(@RequestBody DatosRequest request,Authentication authentication) throws IOException{
 		logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"Imprimir catalogo de usuarios contratantes", IMPRIMIR, authentication, usuario);
-		Response<?> response = usrContra.descargarCatContratantes(request,authentication);
+		Response<Object> response = usrContra.descargarCatContratantes(request,authentication);
 		return CompletableFuture
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
