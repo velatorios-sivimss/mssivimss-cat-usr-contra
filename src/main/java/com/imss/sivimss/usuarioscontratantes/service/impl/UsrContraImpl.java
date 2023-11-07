@@ -206,10 +206,10 @@ public class UsrContraImpl implements UsrContraService {
 		}else if(catalogo.getIdCatalogo()==2) {
 			 response = providerRestTemplate.consumirServicio(usrContra.catalogoEstado(request).getDatos(), urlConsulta+DIAGONAL + PATH_CONSULTA,
 					authentication);
-		}else if(catalogo.getIdCatalogo()==3 && catalogo.getCp()!=null) {
+		}/*else if(catalogo.getIdCatalogo()==3 && catalogo.getCp()!=null) {
 			  response = providerRestTemplate.consumirServicio(usrContra.catalogoCp(request, catalogo.getCp()).getDatos(), urlConsulta+DIAGONAL + PATH_CONSULTA,
 					authentication);	
-		}
+		}*/
 		 else {
 			 logUtil.crearArchivoLog(Level.WARNING.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"INFORMACION INCOMPLETA", CONSULTA, authentication, usuario);
 			 throw new BadRequestException(HttpStatus.BAD_REQUEST, INFORMACION_INCOMPLETA);
