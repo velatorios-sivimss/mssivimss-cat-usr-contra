@@ -187,18 +187,17 @@ public class UsrContra {
 				"IF(SD.NUM_EXTERIOR='null', '', SD.NUM_EXTERIOR) numExt",
 				"IF(SD.NUM_INTERIOR='null', '', SD.NUM_INTERIOR) numInt",
 				"SD.REF_CP cp",
-				"IFNULL(SD.REF_COLONIA, CP.DES_COLONIA) colonia",
-				"IFNULL(CP.DES_ESTADO, SD.REF_ESTADO) estado",
-				"IFNULL(CP.DES_MNPIO, SD.REF_MUNICIPIO) municipio",
+				"IFNULL(SD.REF_COLONIA, '') colonia",
+				"IFNULL(SD.REF_ESTADO, '') estado",
+				"IFNULL(SD.REF_MUNICIPIO, '') municipio",
 				"SC.IND_ACTIVO estatus")
 		.from(SVC_CONTRATANTE)
 		.join(SVC_PERSONA, SC_ID_PERSONA_SP_ID_PERSONA)
 		.leftJoin("SVC_PAIS SPA", "SP.ID_PAIS = SPA.ID_PAIS")
 		.leftJoin("SVC_ESTADO SE", "SP.ID_ESTADO = SE.ID_ESTADO")
-		.join("SVT_DOMICILIO SD", "SC.ID_DOMICILIO = SD.ID_DOMICILIO")
-		.leftJoin("SVC_CP CP", "SD.REF_CP = CP.CVE_CODIGO_POSTAL");
+		.join("SVT_DOMICILIO SD", "SC.ID_DOMICILIO = SD.ID_DOMICILIO");
+	//	.leftJoin("SVC_CP CP", "SD.REF_CP = CP.CVE_CODIGO_POSTAL");
 		queryUtil.where("SC.ID_CONTRATANTE= "+palabra);
-		queryUtil.groupBy("SD.REF_CP");
 		String query = obtieneQuery(queryUtil);
 		log.info("-> " +query);
 		String encoded = encodedQuery(query);
@@ -372,7 +371,7 @@ public class UsrContra {
 		return request;
 	}
 
-	public DatosRequest catalogoCp(DatosRequest request, Integer cp) {
+	/*public DatosRequest catalogoCp(DatosRequest request, Integer cp) {
         Map<String, Object> parametro = new HashMap<>();
         SelectQueryUtil queryUtil = new SelectQueryUtil();
         queryUtil.select("CVE_CODIGO_POSTAL AS codigoPostal", 
@@ -387,7 +386,7 @@ public class UsrContra {
         request.getDatos().remove(AppConstantes.DATOS);
         request.setDatos(parametro);
         return request;
-	}
+	} */
 	
 	public DatosRequest buscarContra(DatosRequest request, String nombre) {
 		 Map<String, Object> parametro = new HashMap<>();
