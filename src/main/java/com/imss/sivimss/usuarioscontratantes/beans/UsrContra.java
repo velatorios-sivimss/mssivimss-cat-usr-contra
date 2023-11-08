@@ -168,7 +168,7 @@ public class UsrContra {
 				"CASE "
 				+"WHEN SP.NUM_SEXO=1 THEN 'MUJER' "
 				+ "WHEN SP.NUM_SEXO=2 THEN 'HOMBRE' "
-				+ "ELSE NULL END sexo",
+				+ "ELSE 'OTRO' END sexo",
 				"IF(SP.REF_OTRO_SEXO='null', '', SP.REF_OTRO_SEXO) otroSexo",
 				"DATE_FORMAT(SP.FEC_NAC, '%d-%m-%Y') fecNacimiento",
 				"SP.ID_PAIS idPais",
@@ -215,7 +215,7 @@ public class UsrContra {
 		q.agregarParametroValues("NOM_PRIMER_APELLIDO", "'" + this.paterno + "'");
 		q.agregarParametroValues("NOM_SEGUNDO_APELLIDO", "'" + this.materno + "'");
 		q.agregarParametroValues("CVE_RFC", setValor(this.rfc));
-		q.agregarParametroValues("NUM_SEXO", this.numSexo.toString());	
+		q.agregarParametroValues("NUM_SEXO",""+numSexo+"");	
 		q.agregarParametroValues("REF_OTRO_SEXO", setValor(this.otroSexo));	
 		q.agregarParametroValues("FEC_NAC", setValor(fecNacimiento));
 		q.agregarParametroValues("ID_PAIS", ""+this.idPais+"");

@@ -106,11 +106,11 @@ public class UsrContraImpl implements UsrContraService {
 		List<UsrContraResponse> usrResponse;
 		Response<Object> response = providerRestTemplate.consumirServicio(usrContra.verDetalle(request).getDatos(), urlConsulta+DIAGONAL + PATH_CONSULTA,
 				authentication);
-		if (response.getCodigo() == 200) {
-			usrResponse = Arrays.asList(modelMapper.map(response.getDatos(), UsrContraResponse[].class));
-			response.setDatos(ConvertirGenerico.convertInstanceOfObject(usrResponse));
-			logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"DETALLE CONTRATANTE OK", CONSULTA, authentication, usuario);
-		}
+			if (response.getCodigo() == 200) {
+				usrResponse = Arrays.asList(modelMapper.map(response.getDatos(), UsrContraResponse[].class));
+				response.setDatos(ConvertirGenerico.convertInstanceOfObject(usrResponse));
+				logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(),this.getClass().getPackage().toString(),"DETALLE CONTRATANTE OK", CONSULTA, authentication, usuario);
+			}
 		return response;
 	}
 
