@@ -218,8 +218,8 @@ public class UsrContra {
 		q.agregarParametroValues("NUM_SEXO", this.numSexo.toString());	
 		q.agregarParametroValues("REF_OTRO_SEXO", setValor(this.otroSexo));	
 		q.agregarParametroValues("FEC_NAC", setValor(fecNacimiento));
-		q.agregarParametroValues("ID_PAIS", this.idPais.toString() );
-		q.agregarParametroValues("ID_ESTADO", this.idlugarNac.toString());
+		q.agregarParametroValues("ID_PAIS", ""+this.idPais+"");
+		q.agregarParametroValues("ID_ESTADO", ""+this.idlugarNac+"");
 		q.agregarParametroValues("REF_TELEFONO", setValor(this.tel));
 		if(this.segundoTel!=null) {
 			q.agregarParametroValues("REF_TELEFONO_FIJO", "'" +this.segundoTel+ "'");
@@ -246,7 +246,7 @@ public class UsrContra {
 		q.agregarParametroValues("REF_CALLE", setValor(this.calle));
 		q.agregarParametroValues("NUM_EXTERIOR", setValor(this.numExte));
 		q.agregarParametroValues("NUM_INTERIOR", setValor(this.numInt ));
-		q.agregarParametroValues("REF_CP", this.cp.toString());
+		q.agregarParametroValues("REF_CP", ""+this.cp+"");
 		q.agregarParametroValues("REF_COLONIA", setValor(this.desColonia));
 		q.agregarParametroValues("REF_MUNICIPIO", setValor(this.desMunicpio));
 		q.agregarParametroValues("REF_ESTADO", setValor(this.desEstado));
