@@ -50,7 +50,7 @@ public class UsrContra {
 	private String calle;
 	private String numExte;
 	private String numInt;
-	private Integer cp;
+	private String cp;
 	private String desColonia;
 	private String desMunicpio;
 	private String desEstado;
@@ -246,7 +246,7 @@ public class UsrContra {
 		q.agregarParametroValues("REF_CALLE", setValor(this.calle));
 		q.agregarParametroValues("NUM_EXTERIOR", setValor(this.numExte));
 		q.agregarParametroValues("NUM_INTERIOR", setValor(this.numInt ));
-		q.agregarParametroValues("REF_CP", ""+this.cp+"");
+		q.agregarParametroValues("REF_CP", setValor(this.cp));
 		q.agregarParametroValues("REF_COLONIA", setValor(this.desColonia));
 		q.agregarParametroValues("REF_MUNICIPIO", setValor(this.desMunicpio));
 		q.agregarParametroValues("REF_ESTADO", setValor(this.desEstado));
