@@ -24,7 +24,7 @@ public class UsrContraResponse {
 	private String nombre;
 	private String paterno;
 	private String materno;
-	private Integer cp;
+	private String cp;
 	private String nacionalidad;
 	private Integer idPais;
 	private String pais;

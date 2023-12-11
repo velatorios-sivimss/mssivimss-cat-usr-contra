@@ -34,7 +34,7 @@ public class UsrContraRequest {
 	private String calle;
 	private String numInt;
 	private String numExt;
-	private Integer cp;
+	private String cp;
 	private String desEstado;
 	private String desMunicipio;
 	private String desColonia;
